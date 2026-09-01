@@ -20,6 +20,7 @@ import {
   REALM_SHADER_FAMILIES,
   REALM_SHADER_IDS,
 } from '../src/shaders/realmRegistry.js'
+import { compatibilityRealmProgram } from '../src/shaders/compatibilityRealm.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const read = (relative) => fs.readFile(path.join(root, relative), 'utf8')
@@ -48,7 +49,7 @@ assert(!ownsPhase('realmRenderer', RUNTIME_PHASE.TREE), 'Realm renderer must not
 assert(ownsPhase('pathRenderer', RUNTIME_PHASE.PATH), 'Path renderer must own PATH')
 assert(!ownsPhase('pathRenderer', RUNTIME_PHASE.REALM), 'Path renderer must not exist during REALM')
 
-const [experience, app, atmosphere, styles, registry, realm, rendererGuard] = await Promise.all([
+const [experience, app, atmosphere, styles, registry, realm, rendererGuard, compatibility] = await Promise.all([
   read('src/components/Experience.jsx'),
   read('src/App.jsx'),
   read('src/components/TempleAtmosphere.jsx'),
@@ -56,6 +57,7 @@ const [experience, app, atmosphere, styles, registry, realm, rendererGuard] = aw
   read('src/shaders/realmRegistry.js'),
   read('src/components/FractalRealm.jsx'),
   read('src/components/RendererGuard.jsx'),
+  read('src/shaders/compatibilityRealm.js'),
 ])
 
 assert(experience.includes("ownsPhase('canonicalTree', phase)"), 'Experience must gate the Tree through ownership')
@@ -81,6 +83,20 @@ for (const realmId of REALM_SHADER_IDS) {
   assert(!first.fragment.includes('uRealmKind'), `${realmId} must not retain shared runtime realm dispatch`)
   assert(!first.fragment.includes('Math.random'), `${realmId} shader source must remain deterministic`)
 }
+
+// M4.15.1 black-frame hardening: a JS module load is not evidence that the
+// mobile GPU linked a drawable program. The active renderer must surface actual
+// driver compiler errors and retain a tiny analytical compatibility path.
+assert(rendererGuard.includes('debug.onShaderError'), 'RendererGuard must surface GPU shader compile/link errors')
+assert(rendererGuard.includes('getProgramInfoLog') && rendererGuard.includes('getShaderInfoLog'), 'GPU failure reports must include driver diagnostics')
+assert(experience.includes('programFailure') && experience.includes('onShaderError={reportProgramError}'), 'Experience must route GPU program failures to the active realm')
+assert(realm.includes('compatibilityRealmProgram'), 'Realm entry must retain a compatibility renderer during shader ignition')
+assert(realm.includes('COMPATIBILITY_HOLD_MS'), 'Compatibility renderer must cover the first compiler/ignition window')
+assert(realm.includes('stableAge.current = 0'), 'Requested realm ignition must reset when its actual program becomes available')
+assert(compatibilityRealmProgram.family === 'compatibility-analytical-realm', 'Compatibility shader identity mismatch')
+assert(compatibilityRealmProgram.fragment.length > 1200, 'Compatibility shader is unexpectedly incomplete')
+assert(!compatibility.includes('for (') && !compatibility.includes('while ('), 'Compatibility shader must remain loop-free for mobile driver safety')
+assert(!compatibility.includes('Math.random'), 'Compatibility renderer must remain deterministic')
 
 let lifecycle = rendererLifecycleReducer(INITIAL_RENDERER_LIFECYCLE, {
   type: RENDERER_EVENT.PHASE_CHANGED,
@@ -117,6 +133,7 @@ console.log('Renderer ownership: Tree/realm/path mutual exclusion PASS')
 console.log('Compositor isolation: REALM/PATH static atmosphere PASS')
 console.log('Realm dispatch: 10 / 10 lazy dedicated programs PASS')
 console.log('Shader integrity: no uRealmKind in instantiated realm programs PASS')
+console.log('Realm ignition: GPU error telemetry + analytical continuity fallback PASS')
 console.log('Recovery lifecycle: context-loss state preservation PASS')
 console.log('Deterministic procedural sources + topology 10/22 PASS')
 console.log('Topology / path operators / documentary attribution separation PASS')
