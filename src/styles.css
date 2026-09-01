@@ -1,0 +1,3649 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #eef2ff;
+  background: #03030a;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root,
+.app-shell {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  overscroll-behavior: none;
+  touch-action: none;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(63, 77, 126, 0.15), transparent 34%),
+    #03030a;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+.hud {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 20;
+  pointer-events: none;
+}
+
+.hud-top {
+  top: max(14px, env(safe-area-inset-top));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.title-lockup {
+  min-width: 0;
+}
+
+.hud-bottom {
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.eyebrow,
+.subtitle,
+.xr-message {
+  margin: 0;
+  color: rgba(220, 228, 255, 0.66);
+}
+
+.eyebrow {
+  font-size: clamp(0.62rem, 1.5vw, 0.78rem);
+  letter-spacing: 0.18em;
+}
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  margin: 4px 0 3px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.55rem, 4.5vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 30px rgba(209, 222, 255, 0.2);
+}
+
+.subtitle {
+  max-width: min(680px, 62vw);
+  font-size: clamp(0.72rem, 1.8vw, 0.95rem);
+  line-height: 1.35;
+}
+
+.status-chip,
+.control-button,
+.mode-selector,
+.sephirah-folio {
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background: rgba(7, 9, 19, 0.61);
+  border: 1px solid rgba(196, 211, 255, 0.16);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.045),
+    0 12px 36px rgba(0, 0, 0, 0.3);
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 999px;
+  padding: 9px 12px;
+  color: rgba(237, 241, 255, 0.78);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #99a7c8;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.status-entering {
+  background: #f1cc75;
+}
+
+.status-fractal {
+  background: #d7e2ff;
+}
+
+.actions,
+.mode-selector,
+.experience-mode-selector,
+.mode-stack,
+.sephirah-folio,
+.contemplation-card {
+  pointer-events: auto;
+}
+
+.control-button {
+  appearance: none;
+  border-radius: 999px;
+  padding: 10px 15px;
+  color: #e8edff;
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.control-button.primary {
+  background: rgba(223, 230, 255, 0.12);
+}
+
+.control-button:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.control-button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.xr-message {
+  position: absolute;
+  right: 0;
+  bottom: 48px;
+  max-width: 320px;
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+/* Attribution mode ------------------------------------------------------- */
+
+.mode-selector {
+  display: inline-flex;
+  gap: 3px;
+  flex: 0 0 auto;
+  padding: 4px;
+  border-radius: 999px;
+}
+
+.mode-button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(221, 229, 255, 0.58);
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.mode-button.is-active {
+  color: #f4f7ff;
+  background: rgba(204, 218, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(218, 228, 255, 0.09);
+}
+
+.mode-button:disabled {
+  opacity: 0.42;
+}
+
+/* Study folio ------------------------------------------------------------ */
+
+.sephirah-folio {
+  position: fixed;
+  z-index: 18;
+  top: max(132px, calc(env(safe-area-inset-top) + 118px));
+  right: max(18px, env(safe-area-inset-right));
+  width: min(380px, 35vw);
+  max-height: calc(100dvh - 232px - env(safe-area-inset-bottom));
+  overflow: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  border-radius: 20px;
+  padding: 17px 17px 16px;
+  background:
+    linear-gradient(155deg, rgba(23, 27, 45, 0.78), rgba(5, 6, 14, 0.72)),
+    rgba(5, 7, 15, 0.72);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(190, 204, 245, 0.24) transparent;
+}
+
+.folio-rule {
+  height: 1px;
+  margin-bottom: 13px;
+  background: linear-gradient(90deg, rgba(233, 239, 255, 0.82), rgba(145, 165, 220, 0.04));
+}
+
+.folio-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.folio-kicker,
+.folio-section-label {
+  margin: 0;
+  color: rgba(192, 204, 238, 0.58);
+  font-size: 0.61rem;
+  letter-spacing: 0.16em;
+}
+
+.folio-header h2 {
+  margin: 3px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 2.7vw, 2.15rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.folio-gloss {
+  margin: 2px 0 0;
+  color: rgba(226, 232, 251, 0.62);
+  font-size: 0.78rem;
+}
+
+.folio-close {
+  appearance: none;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border: 1px solid rgba(210, 222, 255, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(232, 238, 255, 0.7);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.folio-section {
+  margin-top: 15px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(196, 209, 244, 0.09);
+}
+
+.folio-section h3 {
+  margin: 5px 0 3px;
+  color: rgba(246, 248, 255, 0.94);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+
+.folio-principle {
+  margin: 0;
+  color: rgba(217, 226, 250, 0.65);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.folio-facts {
+  margin: 11px 0 0;
+}
+
+.folio-fact {
+  display: grid;
+  grid-template-columns: minmax(82px, 0.34fr) minmax(0, 1fr);
+  gap: 9px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(194, 208, 244, 0.055);
+}
+
+.folio-fact:first-child {
+  border-top: 0;
+}
+
+.folio-fact dt,
+.folio-fact dd {
+  margin: 0;
+}
+
+.folio-fact dt {
+  color: rgba(178, 191, 225, 0.5);
+  font-size: 0.63rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.folio-fact dd {
+  color: rgba(236, 240, 252, 0.82);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.folio-source-note,
+.folio-dispute {
+  margin: 10px 0 0;
+  color: rgba(184, 196, 226, 0.46);
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.folio-dispute {
+  color: rgba(226, 203, 158, 0.67);
+}
+
+.contemplation-prompt {
+  margin: 15px 0 13px;
+  padding: 12px 13px;
+  border-left: 1px solid rgba(229, 235, 255, 0.28);
+  background: rgba(214, 224, 255, 0.035);
+  color: rgba(239, 242, 253, 0.78);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+
+.enter-realm-button {
+  appearance: none;
+  width: 100%;
+  border: 1px solid rgba(220, 229, 255, 0.16);
+  border-radius: 12px;
+  background:
+    linear-gradient(100deg, rgba(209, 220, 255, 0.13), rgba(209, 220, 255, 0.045));
+  color: #f2f5ff;
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font: inherit;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.enter-realm-button:active,
+.folio-close:active,
+.mode-button:active {
+  transform: translateY(1px);
+}
+
+/* Fold / narrow layouts -------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .hud-top {
+    gap: 10px;
+  }
+
+  .subtitle {
+    max-width: 88vw;
+  }
+
+  .mode-stack {
+    position: fixed;
+    right: max(12px, env(safe-area-inset-right));
+    top: max(12px, env(safe-area-inset-top));
+  }
+
+  .title-lockup {
+    padding-top: 58px;
+  }
+
+  .sephirah-folio {
+    top: auto;
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(70px, calc(env(safe-area-inset-bottom) + 58px));
+    width: auto;
+    max-height: min(48dvh, 430px);
+    border-radius: 18px;
+    padding: 14px 14px 13px;
+  }
+
+  .folio-fact {
+    grid-template-columns: minmax(74px, 0.3fr) minmax(0, 1fr);
+  }
+
+  .hud-bottom {
+    align-items: flex-end;
+  }
+
+  .status-chip {
+    max-width: 58vw;
+  }
+}
+
+@media (max-width: 420px) {
+  .eyebrow {
+    letter-spacing: 0.12em;
+  }
+
+  .subtitle {
+    max-width: 94vw;
+  }
+
+  .sephirah-folio {
+    max-height: min(52dvh, 440px);
+  }
+
+  .folio-attributions .folio-source-note {
+    display: none;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .hud-top {
+    top: max(8px, env(safe-area-inset-top));
+  }
+
+  .title-lockup {
+    padding-top: 0;
+  }
+
+  h1 {
+    font-size: clamp(1.35rem, 4vw, 2rem);
+  }
+
+  .subtitle {
+    max-width: 54vw;
+    font-size: 0.68rem;
+  }
+
+  .mode-stack {
+    top: max(8px, env(safe-area-inset-top));
+  }
+
+  .sephirah-folio {
+    top: max(72px, calc(env(safe-area-inset-top) + 58px));
+    bottom: max(58px, calc(env(safe-area-inset-bottom) + 48px));
+    left: auto;
+    right: max(10px, env(safe-area-inset-right));
+    width: min(360px, 43vw);
+    max-height: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control-button:active,
+  .enter-realm-button:active,
+  .folio-close:active,
+  .mode-button:active {
+    transform: none;
+  }
+}
+
+/* M3B path metamorphosis ------------------------------------------------ */
+.status-path {
+  background: #ffe0a1;
+}
+
+.path-folio {
+  border-color: rgba(255, 221, 156, 0.2);
+  background:
+    linear-gradient(150deg, rgba(34, 27, 38, 0.82), rgba(6, 7, 15, 0.74)),
+    rgba(5, 7, 15, 0.74);
+}
+
+.path-folio .folio-rule {
+  background: linear-gradient(90deg, rgba(255, 236, 191, 0.9), rgba(145, 165, 220, 0.03));
+}
+
+.operative-path-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.path-link-button {
+  appearance: none;
+  width: 100%;
+  border: 1px solid rgba(255, 226, 171, 0.13);
+  border-radius: 11px;
+  background: rgba(255, 218, 144, 0.045);
+  color: rgba(244, 239, 225, 0.82);
+  padding: 9px 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.035em;
+  cursor: pointer;
+}
+
+.path-link-button:active {
+  transform: translateY(1px);
+}
+
+
+/* M4 experience modes --------------------------------------------------- */
+
+.mode-stack {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.experience-mode-selector {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(7, 9, 19, 0.57);
+  border: 1px solid rgba(196, 211, 255, 0.14);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.04), 0 12px 34px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.experience-mode-button {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(221, 229, 255, 0.52);
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 0.64rem;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+}
+
+.experience-mode-button.is-active {
+  color: rgba(248, 250, 255, 0.96);
+  background: rgba(211, 222, 255, 0.105);
+  box-shadow: inset 0 0 0 1px rgba(220, 229, 255, 0.075);
+}
+
+.experience-mode-button:disabled {
+  opacity: 0.42;
+}
+
+.mode-vision .experience-mode-selector {
+  opacity: 0.38;
+}
+
+.mode-vision .experience-mode-selector:hover,
+.mode-vision .experience-mode-selector:focus-within {
+  opacity: 0.94;
+}
+
+.mode-vision.phase-realm .hud-top,
+.mode-vision.phase-path .hud-top {
+  min-height: 40px;
+}
+
+.mode-vision.phase-realm .control-button.primary,
+.mode-vision.phase-path .control-button.primary {
+  opacity: 0.48;
+  transition: opacity 180ms ease;
+}
+
+.mode-vision.phase-realm .control-button.primary:hover,
+.mode-vision.phase-realm .control-button.primary:focus-visible,
+.mode-vision.phase-path .control-button.primary:hover,
+.mode-vision.phase-path .control-button.primary:focus-visible {
+  opacity: 1;
+}
+
+/* M4 source ledger ------------------------------------------------------ */
+
+.source-ledger {
+  margin-top: 11px;
+  border-top: 1px solid rgba(197, 210, 245, 0.08);
+  padding-top: 9px;
+}
+
+.source-ledger summary {
+  color: rgba(215, 224, 248, 0.64);
+  font-size: 0.66rem;
+  letter-spacing: 0.055em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.source-ledger-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.source-record {
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: rgba(213, 224, 255, 0.035);
+  border: 1px solid rgba(205, 218, 255, 0.065);
+}
+
+.source-record-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: rgba(242, 245, 255, 0.82);
+  font-size: 0.64rem;
+}
+
+.source-record-head span {
+  color: rgba(184, 198, 232, 0.45);
+  text-align: right;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+
+.source-record p {
+  margin: 4px 0 0;
+  color: rgba(191, 202, 232, 0.52);
+  font-size: 0.59rem;
+  line-height: 1.4;
+}
+
+.source-record .source-locator {
+  color: rgba(229, 218, 182, 0.66);
+}
+
+/* M4 contemplation threshold ------------------------------------------ */
+
+.contemplation-card {
+  position: fixed;
+  z-index: 18;
+  left: 50%;
+  bottom: max(84px, calc(env(safe-area-inset-bottom) + 72px));
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 32px));
+  padding: 17px 18px 16px;
+  border: 1px solid rgba(214, 224, 255, 0.14);
+  border-radius: 18px;
+  background: linear-gradient(150deg, rgba(18, 21, 35, 0.69), rgba(5, 6, 13, 0.64));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.contemplation-card h2 {
+  margin: 2px 0 6px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: clamp(1.45rem, 4vw, 2.05rem);
+}
+
+.contemplation-kicker {
+  margin: 0;
+  color: rgba(194, 207, 239, 0.55);
+  font-size: 0.62rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.contemplation-threshold {
+  margin: 0;
+  color: rgba(239, 242, 252, 0.78);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.84rem;
+  line-height: 1.48;
+}
+
+.contemplation-card blockquote {
+  margin: 11px 0 13px;
+  padding-left: 11px;
+  border-left: 1px solid rgba(218, 227, 255, 0.2);
+  color: rgba(199, 210, 238, 0.58);
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.contemplation-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(230, 236, 255, 0.58);
+  font-size: 1.08rem;
+  cursor: pointer;
+}
+
+.contemplation-enter {
+  appearance: none;
+  width: 100%;
+  border: 1px solid rgba(223, 231, 255, 0.13);
+  border-radius: 11px;
+  background: rgba(223, 231, 255, 0.065);
+  color: rgba(246, 248, 255, 0.92);
+  padding: 10px 11px;
+  display: flex;
+  justify-content: space-between;
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+/* M4 restrained ritual cue -------------------------------------------- */
+
+.ritual-cue {
+  position: fixed;
+  z-index: 17;
+  left: 50%;
+  top: 64%;
+  width: min(620px, calc(100vw - 44px));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  text-align: center;
+  opacity: 0;
+  animation: ritual-cue-appear 4.8s ease both;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.84);
+}
+
+.ritual-cue p {
+  margin: 0 0 7px;
+  color: rgba(209, 220, 250, 0.48);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+}
+
+.ritual-cue blockquote {
+  margin: 0;
+  color: rgba(247, 248, 253, 0.88);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.92rem, 2.2vw, 1.28rem);
+  line-height: 1.48;
+}
+
+@keyframes ritual-cue-appear {
+  0% { opacity: 0; transform: translate(-50%, -44%); }
+  14% { opacity: 0.92; transform: translate(-50%, -50%); }
+  64% { opacity: 0.82; }
+  100% { opacity: 0; transform: translate(-50%, -54%); }
+}
+
+@media (max-width: 760px) {
+  .experience-mode-selector {
+    max-width: calc(100vw - 24px);
+  }
+
+  .experience-mode-button {
+    padding: 6px 7px;
+    font-size: 0.59rem;
+  }
+
+  .mode-stack .mode-selector {
+    position: static;
+  }
+
+  .mode-stack .mode-button {
+    padding: 6px 9px;
+    font-size: 0.62rem;
+  }
+
+  .mode-study .title-lockup {
+    padding-top: 68px;
+  }
+
+  .mode-contemplation .title-lockup {
+    padding-top: 42px;
+  }
+
+  .contemplation-card {
+    bottom: max(72px, calc(env(safe-area-inset-bottom) + 60px));
+    padding: 14px 14px 13px;
+  }
+
+  .ritual-cue {
+    top: 67%;
+    width: calc(100vw - 36px);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .experience-mode-button {
+    padding: 5px 7px;
+  }
+
+  .mode-study .title-lockup,
+  .mode-contemplation .title-lockup {
+    padding-top: 0;
+  }
+
+  .contemplation-card {
+    left: auto;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(54px, calc(env(safe-area-inset-bottom) + 44px));
+    transform: none;
+    width: min(390px, 44vw);
+  }
+
+  .ritual-cue {
+    top: 62%;
+    width: min(560px, 58vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-mode-selector,
+  .ritual-cue {
+    transition: none;
+    animation: none;
+  }
+
+  .ritual-cue {
+    opacity: 0.82;
+  }
+}
+
+/* M4 optional active-study drawer -------------------------------------- */
+.study-drawer {
+  position: fixed;
+  z-index: 19;
+  right: max(18px, env(safe-area-inset-right));
+  top: max(132px, calc(env(safe-area-inset-top) + 118px));
+  width: min(360px, 34vw);
+  max-height: calc(100dvh - 226px - env(safe-area-inset-bottom));
+  overflow: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 14px;
+  border-radius: 17px;
+  border: 1px solid rgba(205, 218, 255, 0.13);
+  background: linear-gradient(150deg, rgba(15, 18, 31, 0.72), rgba(4, 5, 12, 0.66));
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(19px);
+  -webkit-backdrop-filter: blur(19px);
+  pointer-events: auto;
+}
+
+.study-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.study-drawer-header p {
+  margin: 0;
+  color: rgba(188, 201, 236, 0.5);
+  font-size: 0.57rem;
+  letter-spacing: 0.16em;
+}
+
+.study-drawer-header h2 {
+  margin: 3px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.45rem;
+  font-weight: 400;
+}
+
+.study-drawer-header button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(232, 238, 255, 0.62);
+  font-size: 1.06rem;
+  cursor: pointer;
+}
+
+.study-current-key {
+  margin: 12px 0 0;
+  color: rgba(242, 245, 255, 0.82);
+  font-size: 0.7rem;
+  letter-spacing: 0.045em;
+}
+
+.study-ritual-line {
+  margin: 7px 0 0;
+  padding-left: 10px;
+  border-left: 1px solid rgba(220, 229, 255, 0.18);
+  color: rgba(213, 221, 243, 0.62);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.study-documentary {
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(201, 214, 250, 0.08);
+}
+
+.actions {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.control-button.is-active {
+  background: rgba(213, 223, 255, 0.15);
+  border-color: rgba(216, 227, 255, 0.24);
+}
+
+@media (max-width: 760px) {
+  .study-drawer {
+    top: auto;
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(72px, calc(env(safe-area-inset-bottom) + 60px));
+    width: auto;
+    max-height: min(43dvh, 390px);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .study-drawer {
+    top: max(64px, calc(env(safe-area-inset-top) + 52px));
+    bottom: max(52px, calc(env(safe-area-inset-bottom) + 42px));
+    left: auto;
+    right: max(10px, env(safe-area-inset-right));
+    width: min(350px, 42vw);
+    max-height: none;
+  }
+}
+
+@keyframes ritual-cue-reduced {
+  0%, 72% { opacity: 0.82; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ritual-cue {
+    animation: ritual-cue-reduced 3.2s linear both;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ========================================================================== */
+/* M4.5 — LIVING GRIMOIRE FAMILY UI                                          */
+/* Monas-inspired dark manuscript atmosphere + Liber 333 astral ritual UI.   */
+/* ========================================================================== */
+
+:root {
+  --family-void: #05030f;
+  --family-void-warm: #070403;
+  --family-obsidian: #090814;
+  --family-parchment: #f1e7c9;
+  --family-parchment-dim: #bcb29c;
+  --family-lux: #d8dcf2;
+  --family-lux-dim: #9298b8;
+  --family-gold: #d9b86d;
+  --family-gold-hot: #ffdf73;
+  --family-crimson: #ff405d;
+  --family-wine: #6f102a;
+  --temple-accent: #fff5b8;
+  --temple-accent-core: #ffd642;
+  --temple-accent-aura: #7d3500;
+  --temple-accent-rgb: 255, 245, 184;
+  --temple-accent-core-rgb: 255, 214, 66;
+  --temple-accent-2: #fff5b8;
+  --temple-accent-2-rgb: 255, 245, 184;
+  font-family: 'IM Fell English', Georgia, serif;
+  color: var(--family-lux);
+  background: var(--family-void);
+}
+
+body {
+  color: var(--family-lux);
+  font-family: 'IM Fell English', Georgia, serif;
+  cursor: crosshair;
+  background:
+    radial-gradient(110% 85% at 50% -8%, rgba(69, 45, 91, 0.18), transparent 58%),
+    radial-gradient(70% 70% at 15% 85%, rgba(99, 14, 38, 0.08), transparent 70%),
+    #05030f;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+::selection {
+  color: #fff6d7;
+  background: rgba(var(--temple-accent-core-rgb), 0.28);
+}
+
+.app-shell {
+  isolation: isolate;
+  background:
+    radial-gradient(85% 78% at 50% 48%, rgba(var(--temple-accent-rgb), 0.025), transparent 72%),
+    transparent;
+  --vellum-edge: rgba(var(--temple-accent-rgb), 0.22);
+  --vellum-edge-soft: rgba(var(--temple-accent-rgb), 0.09);
+}
+
+.app-shell canvas {
+  transition: filter 900ms cubic-bezier(.2,.7,.2,1), transform 1000ms cubic-bezier(.2,.7,.2,1), opacity 900ms ease;
+}
+
+.threshold-open:not(.threshold-leaving) canvas {
+  filter: brightness(0.31) saturate(0.72) blur(1.8px);
+  transform: scale(1.035);
+}
+
+.threshold-leaving canvas {
+  filter: none;
+  transform: scale(1);
+}
+
+/* Critical Fold invariant: after the ceremonial reveal the WebGL canvas must
+   return to a native compositor surface. An identity CSS filter still forces
+   a costly off-screen layer on Chromium and can collide with raymarch shader
+   compilation during the first Sephirah handoff. */
+.threshold-cleared canvas {
+  filter: none;
+  transform: none;
+  transition: none;
+}
+
+/* Global ritual atmosphere ------------------------------------------------ */
+
+.temple-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  overflow: hidden;
+  isolation: isolate;
+  contain: strict;
+}
+
+.temple-aurora,
+.temple-shimmer,
+.temple-vignette,
+.temple-noise,
+.temple-engraving,
+.temple-marginalia {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.temple-aurora {
+  inset: -14%;
+  opacity: 0.55;
+  background:
+    radial-gradient(38% 34% at 22% 28%, rgba(var(--temple-accent-rgb), 0.055), transparent 70%),
+    radial-gradient(42% 36% at 80% 62%, rgba(var(--temple-accent-2-rgb), 0.043), transparent 72%),
+    conic-gradient(from 190deg at 50% 50%, transparent, rgba(113, 13, 42, 0.025), transparent 30%, rgba(207, 170, 87, 0.022), transparent 62%);
+  filter: blur(24px);
+  animation: templeAurora 30s ease-in-out infinite alternate;
+}
+
+.temple-shimmer {
+  inset: -10%;
+  opacity: 0.12;
+  background: linear-gradient(108deg, transparent 22%, rgba(var(--temple-accent-rgb), 0.03) 43%, rgba(255,255,255,0.055) 50%, rgba(136,21,48,0.035) 57%, transparent 78%);
+  background-size: 230% 100%;
+  mix-blend-mode: screen;
+  animation: templeShimmer 18s linear infinite;
+}
+
+.temple-vignette {
+  background:
+    radial-gradient(circle at center, transparent 34%, rgba(2, 1, 7, 0.22) 67%, rgba(2, 1, 7, 0.78) 116%),
+    linear-gradient(to bottom, rgba(0,0,0,0.16), transparent 17%, transparent 76%, rgba(0,0,0,0.25));
+}
+
+.temple-noise {
+  opacity: 0.085;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+}
+
+/* Heavy raymarch phases retain every atmosphere layer, but exchange the
+   viewport-sized blur for already-soft radial gradients. This preserves the
+   same living ambience while freeing the Fold GPU for the actual geometry. */
+.atmosphere-ingress .temple-aurora,
+.atmosphere-realm .temple-aurora,
+.atmosphere-path .temple-aurora,
+.atmosphere-return .temple-aurora {
+  filter: none;
+  opacity: 0.36;
+  background:
+    radial-gradient(54% 50% at 20% 26%, rgba(var(--temple-accent-rgb), 0.042), transparent 78%),
+    radial-gradient(58% 52% at 82% 66%, rgba(var(--temple-accent-2-rgb), 0.032), transparent 80%),
+    conic-gradient(from 190deg at 50% 50%, transparent, rgba(113, 13, 42, 0.02), transparent 31%, rgba(207, 170, 87, 0.018), transparent 64%);
+}
+
+.atmosphere-ingress .temple-shimmer,
+.atmosphere-realm .temple-shimmer,
+.atmosphere-path .temple-shimmer,
+.atmosphere-return .temple-shimmer {
+  opacity: 0.075;
+}
+
+.atmosphere-ingress .temple-noise,
+.atmosphere-realm .temple-noise,
+.atmosphere-path .temple-noise,
+.atmosphere-return .temple-noise {
+  opacity: 0.052;
+}
+
+.temple-engraving {
+  left: 50%;
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--temple-accent-rgb), 0.035);
+  transform: translate(-50%, -50%);
+  opacity: 0.34;
+}
+
+.temple-engraving::before,
+.temple-engraving::after {
+  content: '';
+  position: absolute;
+  inset: 11%;
+  border: 1px solid rgba(var(--temple-accent-rgb), 0.025);
+  border-radius: inherit;
+}
+
+.temple-engraving::after {
+  inset: 27%;
+}
+
+.ring-one {
+  width: min(94vw, 920px);
+  aspect-ratio: 1;
+  animation: templeRingTurn 88s linear infinite;
+}
+
+.ring-two {
+  width: min(73vw, 690px);
+  aspect-ratio: 1;
+  border-style: dashed;
+  opacity: 0.2;
+  animation: templeRingTurnReverse 71s linear infinite;
+}
+
+.temple-marginalia {
+  font-family: 'Cinzel', serif;
+  color: rgba(var(--temple-accent-rgb), 0.2);
+}
+
+.marginal-glyph {
+  position: absolute;
+  font-size: clamp(0.72rem, 1.4vw, 1rem);
+  opacity: 0;
+  text-shadow: 0 0 12px rgba(var(--temple-accent-rgb), 0.32);
+  animation: marginalGlyphDrift 20s ease-in-out infinite;
+  animation-delay: var(--glyph-delay);
+}
+
+.glyph-1 { left: 4%; top: 18%; }
+.glyph-2 { right: 7%; top: 23%; }
+.glyph-3 { left: 9%; top: 70%; }
+.glyph-4 { right: 9%; top: 76%; }
+.glyph-5 { left: 23%; top: 8%; }
+.glyph-6 { right: 22%; top: 9%; }
+.glyph-7 { left: 4%; top: 44%; }
+.glyph-8 { right: 4%; top: 48%; }
+.glyph-9 { left: 28%; bottom: 4%; }
+.glyph-10 { right: 29%; bottom: 4%; }
+
+@keyframes templeAurora {
+  0% { transform: translate3d(-1.5%, 1%, 0) scale(0.98) rotate(-1deg); opacity: 0.40; }
+  50% { opacity: 0.63; }
+  100% { transform: translate3d(1.5%, -1.5%, 0) scale(1.04) rotate(1.5deg); opacity: 0.48; }
+}
+
+@keyframes templeShimmer {
+  from { background-position: -210% 0; }
+  to { background-position: 210% 0; }
+}
+
+@keyframes templeRingTurn { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes templeRingTurnReverse { to { transform: translate(-50%, -50%) rotate(-360deg); } }
+
+@keyframes marginalGlyphDrift {
+  0% { opacity: 0; transform: translateY(14px) scale(0.92) rotate(-3deg); }
+  18% { opacity: 0.22; }
+  76% { opacity: 0.16; }
+  100% { opacity: 0; transform: translateY(-25px) scale(1.05) rotate(3deg); }
+}
+
+
+/* Realm/path transition gate ------------------------------------------------
+   A lightweight ritual aperture makes the handoff legible while the camera
+   director finishes its deterministic handoff. No backdrop filters. */
+.transition-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 34;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  overflow: hidden;
+  color: var(--family-parchment);
+  animation: transitionGateIn 420ms ease both;
+}
+
+.transition-gate-aura {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(64vw, 540px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(var(--temple-accent-rgb), 0.075), transparent 36%),
+    radial-gradient(circle, transparent 48%, rgba(var(--temple-accent-rgb), 0.026) 49%, transparent 51%);
+  opacity: 0.88;
+  animation: transitionAuraBreathe 1.55s ease-in-out infinite alternate;
+}
+
+.transition-gate-mark {
+  position: relative;
+  width: 118px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  margin-top: -34px;
+}
+
+.transition-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(var(--temple-accent-rgb), 0.52);
+  border-radius: 50%;
+  box-shadow: 0 0 24px rgba(var(--temple-accent-rgb), 0.12);
+}
+
+.transition-ring.ring-a { animation: transitionRingA 1.7s linear infinite; }
+.transition-ring.ring-b { inset: 18%; border-style: dashed; opacity: 0.72; animation: transitionRingB 1.2s linear infinite; }
+.transition-ring.ring-c { inset: 35%; border-color: rgba(255, 64, 93, 0.46); opacity: 0.76; animation: transitionRingA 0.92s linear infinite reverse; }
+
+.transition-gate-star {
+  position: relative;
+  z-index: 2;
+  color: var(--family-gold-hot);
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  text-shadow: 0 0 18px rgba(var(--temple-accent-rgb), 0.68);
+  animation: transitionStarPulse 1.15s ease-in-out infinite alternate;
+}
+
+.transition-gate-copy {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 80px);
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 48px));
+  text-align: center;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.92);
+}
+
+.transition-gate-copy p {
+  margin: 0 0 7px;
+  color: rgba(var(--temple-accent-rgb), 0.68);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+}
+
+.transition-gate-copy h2 {
+  margin: 0;
+  color: var(--family-parchment);
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: clamp(1.15rem, 3.7vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.transition-gate-copy span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(241,231,201,0.64);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.78rem;
+}
+
+.transition-returning { animation-name: transitionGateReturn; }
+
+@keyframes transitionGateIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes transitionGateReturn {
+  from { opacity: 0; }
+  35% { opacity: 1; }
+  to { opacity: 0.88; }
+}
+@keyframes transitionAuraBreathe {
+  from { transform: translate(-50%, -50%) scale(0.94); opacity: 0.54; }
+  to { transform: translate(-50%, -50%) scale(1.06); opacity: 0.92; }
+}
+@keyframes transitionRingA { to { transform: rotate(360deg); } }
+@keyframes transitionRingB { to { transform: rotate(-360deg) scale(0.94); } }
+@keyframes transitionStarPulse { from { opacity: 0.54; transform: scale(0.88); } to { opacity: 1; transform: scale(1.08); } }
+
+/* Threshold / new main page ---------------------------------------------- */
+
+.temple-threshold {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  touch-action: pan-y;
+  pointer-events: auto;
+  opacity: 1;
+  transition: opacity 760ms ease, filter 760ms ease;
+}
+
+.temple-threshold.is-leaving {
+  opacity: 0;
+  filter: blur(7px) brightness(1.3);
+  pointer-events: none;
+}
+
+.threshold-veil {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(var(--temple-accent-rgb), 0.065), transparent 31%),
+    radial-gradient(ellipse at 50% 38%, rgba(49, 29, 76, 0.18), transparent 58%),
+    linear-gradient(180deg, rgba(3,2,8,0.62), rgba(3,2,8,0.76));
+  box-shadow: inset 0 0 190px rgba(0,0,0,0.87);
+}
+
+.threshold-veil::before,
+.threshold-veil::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.threshold-veil::before {
+  inset: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  border: 1px solid rgba(217, 184, 109, 0.12);
+  box-shadow: inset 0 0 55px rgba(217, 184, 109, 0.012);
+}
+
+.threshold-veil::after {
+  left: 50%; top: 6%; bottom: 6%; width: 1px;
+  background: linear-gradient(transparent, rgba(217,184,109,0.08), transparent);
+}
+
+.threshold-content {
+  position: relative;
+  z-index: 2;
+  width: min(760px, calc(100vw - 36px));
+  min-height: min(860px, calc(100dvh - 30px));
+  padding: clamp(24px, 5vh, 50px) clamp(18px, 5vw, 54px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--family-parchment);
+  animation: thresholdMaterialize 1.6s cubic-bezier(.16,.78,.2,1) both;
+}
+
+.threshold-ordinal,
+.threshold-footnote,
+.threshold-registers {
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+}
+
+.threshold-ordinal {
+  margin: 0;
+  color: rgba(216,220,242,0.58);
+  font-size: clamp(0.56rem, 1.5vw, 0.72rem);
+  letter-spacing: 0.28em;
+}
+
+.threshold-rule {
+  width: min(420px, 72vw);
+  height: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  color: var(--family-gold);
+  opacity: 0.68;
+  margin: 9px 0 3px;
+}
+
+.threshold-rule::before,
+.threshold-rule::after {
+  content: '';
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(217,184,109,0.78));
+}
+
+.threshold-rule::after { transform: scaleX(-1); }
+.threshold-rule span { font-size: 0.68rem; }
+
+.threshold-title {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+.threshold-blackletter {
+  font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
+  font-size: clamp(3.25rem, 11vw, 6.8rem);
+  line-height: 0.88;
+  letter-spacing: 0.035em;
+  color: #efe4c4;
+  text-shadow:
+    0 0 1px #fff9e9,
+    0 0 16px rgba(217,184,109,0.32),
+    0 0 48px rgba(var(--temple-accent-rgb),0.13),
+    0 4px 20px rgba(0,0,0,0.92);
+  animation: thresholdTitleBreathe 7s ease-in-out infinite;
+}
+
+.threshold-subtitle {
+  font-family: 'Cinzel', serif;
+  color: rgba(216,220,242,0.76);
+  font-size: clamp(0.72rem, 2.25vw, 1rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+}
+
+.threshold-seal-stage {
+  position: relative;
+  width: min(47vh, 76vw, 360px);
+  margin: clamp(12px, 2.5vh, 23px) auto 5px;
+}
+
+.threshold-hebrew {
+  position: absolute;
+  left: 50%;
+  bottom: 3%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(241,231,201,0.34);
+  font-family: 'IM Fell English', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.34em;
+  text-shadow: 0 0 14px rgba(var(--temple-accent-rgb),0.3);
+}
+
+.living-tree-seal {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  color: var(--temple-accent);
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 0 18px rgba(var(--temple-accent-rgb),0.13));
+  animation: sealFloat 9s ease-in-out infinite;
+}
+
+.living-tree-seal svg {
+  position: relative;
+  z-index: 2;
+  width: 72%;
+  height: 86%;
+  overflow: visible;
+}
+
+.living-tree-orbit {
+  position: absolute;
+  left: 50%; top: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--temple-accent-rgb),0.20);
+  transform: translate(-50%,-50%);
+  box-shadow: 0 0 18px rgba(var(--temple-accent-rgb),0.04);
+}
+
+.orbit-a {
+  width: 88%; aspect-ratio: 1;
+  border-style: solid dashed;
+  animation: sealOrbit 38s linear infinite;
+}
+.orbit-b {
+  width: 70%; aspect-ratio: 1;
+  border-style: dashed;
+  opacity: 0.62;
+  animation: sealOrbitReverse 26s linear infinite;
+}
+.orbit-c {
+  width: 52%; aspect-ratio: 1;
+  border-color: rgba(255,64,93,0.16);
+  transform: translate(-50%,-50%) rotateX(62deg);
+  animation: sealOrbitTilt 17s linear infinite;
+}
+
+.living-tree-crosshair::before,
+.living-tree-crosshair::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  left: 50%; top: 50%;
+  background: linear-gradient(transparent, rgba(var(--temple-accent-rgb),0.13), transparent);
+  transform: translate(-50%,-50%);
+}
+.living-tree-crosshair::before { width: 1px; height: 94%; }
+.living-tree-crosshair::after { height: 1px; width: 94%; }
+
+.seal-paths line {
+  stroke: rgba(241,231,201,0.50);
+  stroke-width: 0.42;
+  stroke-linecap: round;
+  stroke-dasharray: 2.6 1.8;
+  animation: sealPathFlow 7s linear infinite;
+  animation-delay: var(--seal-delay);
+}
+
+.seal-node-aura {
+  fill: rgba(var(--temple-accent-rgb),0.12);
+  stroke: rgba(var(--temple-accent-rgb),0.34);
+  stroke-width: 0.28;
+  animation: sealNodeBreath 5s ease-in-out infinite;
+  animation-delay: var(--seal-delay);
+}
+
+.seal-node-core {
+  stroke: rgba(255,255,255,0.55);
+  stroke-width: 0.22;
+  animation: sealNodeBreath 5s ease-in-out infinite reverse;
+  animation-delay: var(--seal-delay);
+}
+
+.living-tree-seal.is-compact {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  animation-duration: 12s;
+  opacity: 0.78;
+}
+.living-tree-seal.is-compact svg { width: 68%; height: 88%; }
+.living-tree-seal.is-compact .orbit-a { width: 96%; }
+.living-tree-seal.is-compact .orbit-b { width: 75%; }
+.living-tree-seal.is-compact .orbit-c { display: none; }
+
+.threshold-invocation {
+  margin: 4px 0 5px;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: rgba(241,231,201,0.88);
+  font-size: clamp(0.95rem, 2.5vw, 1.16rem);
+  letter-spacing: 0.035em;
+  text-shadow: 0 0 18px rgba(var(--temple-accent-rgb),0.12);
+}
+
+.threshold-copy {
+  max-width: 590px;
+  margin: 4px auto 17px;
+  color: rgba(216,220,242,0.55);
+  font-size: clamp(0.74rem, 1.8vw, 0.88rem);
+  line-height: 1.55;
+}
+
+.threshold-enter {
+  appearance: none;
+  width: min(390px, 88vw);
+  min-height: 50px;
+  border: 1px solid rgba(217,184,109,0.40);
+  border-radius: 2px;
+  background:
+    linear-gradient(115deg, rgba(217,184,109,0.08), rgba(var(--temple-accent-rgb),0.025) 46%, rgba(255,64,93,0.045)),
+    rgba(4,3,10,0.74);
+  color: #f5eacb;
+  padding: 12px 15px 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.7rem, 1.8vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 24px rgba(217,184,109,0.025),
+    0 0 26px rgba(var(--temple-accent-rgb),0.035);
+  transition: border-color 260ms ease, color 260ms ease, box-shadow 260ms ease, transform 180ms ease;
+}
+
+.threshold-enter:hover,
+.threshold-enter:focus-visible {
+  border-color: rgba(var(--temple-accent-rgb),0.75);
+  color: #fff8e7;
+  box-shadow:
+    inset 0 0 34px rgba(var(--temple-accent-rgb),0.045),
+    0 0 30px rgba(var(--temple-accent-rgb),0.11);
+}
+.threshold-enter:active { transform: scale(0.992); }
+.threshold-enter-mark {
+  color: var(--temple-accent);
+  font-size: 1rem;
+  text-shadow: 0 0 12px rgba(var(--temple-accent-rgb),0.8);
+  animation: ritualPulseFamily 2.8s ease-in-out infinite;
+}
+
+.threshold-registers {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  color: rgba(216,220,242,0.33);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+}
+.threshold-registers i {
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(217,184,109,0.38), transparent);
+}
+
+.threshold-footnote {
+  margin: 10px 0 0;
+  max-width: 520px;
+  color: rgba(188,178,156,0.27);
+  font-size: 0.46rem;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+}
+
+@keyframes thresholdMaterialize {
+  0% { opacity: 0; transform: translateY(18px) scale(0.98); filter: blur(8px); }
+  45% { opacity: 0.66; filter: blur(1px); }
+  100% { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes thresholdTitleBreathe {
+  0%,100% { opacity: 0.92; filter: brightness(0.96); }
+  50% { opacity: 1; filter: brightness(1.08); }
+}
+@keyframes sealFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-5px) scale(1.008); } }
+@keyframes sealOrbit { to { transform: translate(-50%,-50%) rotate(360deg); } }
+@keyframes sealOrbitReverse { to { transform: translate(-50%,-50%) rotate(-360deg); } }
+@keyframes sealOrbitTilt { to { transform: translate(-50%,-50%) rotateX(62deg) rotateZ(360deg); } }
+@keyframes sealPathFlow { to { stroke-dashoffset: -18; } }
+@keyframes sealNodeBreath { 0%,100% { opacity: 0.56; } 50% { opacity: 1; } }
+@keyframes ritualPulseFamily { 0%,100% { opacity: 0.44; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1.08); } }
+
+.threshold-open .hud,
+.threshold-open .ritual-cue,
+.threshold-open .sephirah-folio,
+.threshold-open .contemplation-card,
+.threshold-open .study-drawer {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Main HUD — illuminated manuscript rather than generic glass UI ---------- */
+
+.hud {
+  color: var(--family-lux);
+}
+
+.hud-top {
+  top: max(13px, env(safe-area-inset-top));
+  left: max(14px, env(safe-area-inset-left));
+  right: max(14px, env(safe-area-inset-right));
+  gap: 14px;
+}
+
+.title-lockup {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: min(760px, 72vw);
+  pointer-events: none;
+  filter: drop-shadow(0 8px 15px rgba(0,0,0,0.48));
+}
+
+.hud-seal {
+  margin-top: 1px;
+}
+
+.title-copy {
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(188,195,219,0.55);
+  font-size: clamp(0.5rem, 1.25vw, 0.66rem);
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.eyebrow span {
+  color: var(--temple-accent);
+  text-shadow: 0 0 10px rgba(var(--temple-accent-rgb),0.65);
+}
+
+.title-lockup h1 {
+  margin: 3px 0 2px;
+  font-family: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+  font-size: clamp(1.45rem, 4vw, 2.9rem);
+  line-height: 1.03;
+  color: #ece7dc;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-shadow:
+    0 2px 14px rgba(0,0,0,0.95),
+    0 0 20px rgba(var(--temple-accent-rgb),0.12);
+}
+
+.subtitle {
+  color: rgba(203,207,225,0.57);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: clamp(0.66rem, 1.6vw, 0.84rem);
+  line-height: 1.42;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+.title-engraving {
+  width: min(330px, 70%);
+  height: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  color: rgba(var(--temple-accent-rgb),0.44);
+  margin-top: 5px;
+}
+.title-engraving::before,
+.title-engraving::after {
+  content: '';
+  height: 1px;
+  background: linear-gradient(90deg, rgba(var(--temple-accent-rgb),0.34), transparent);
+}
+.title-engraving::before { transform: scaleX(-1); }
+.title-engraving span { font-size: 0.47rem; }
+
+/* Registers */
+.mode-stack {
+  gap: 5px;
+}
+
+.experience-mode-selector,
+.mode-selector {
+  border-radius: 2px;
+  padding: 3px;
+  background: rgba(5,3,15,0.58);
+  border: 1px solid rgba(217,184,109,0.13);
+  box-shadow:
+    inset 0 0 24px rgba(var(--temple-accent-rgb),0.018),
+    0 10px 30px rgba(0,0,0,0.34);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.experience-mode-button {
+  border-radius: 1px;
+  min-width: 66px;
+  padding: 6px 8px 5px;
+  color: rgba(211,210,209,0.48);
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  transition: color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+}
+
+.experience-mode-button small {
+  color: rgba(184,178,163,0.30);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.37rem;
+  letter-spacing: 0.13em;
+  line-height: 1;
+}
+
+.experience-mode-button.is-active {
+  color: #f1e7c9;
+  background: linear-gradient(180deg, rgba(var(--temple-accent-rgb),0.075), rgba(var(--temple-accent-rgb),0.018));
+  box-shadow: inset 0 -1px rgba(var(--temple-accent-rgb),0.62), 0 0 17px rgba(var(--temple-accent-rgb),0.035);
+}
+.experience-mode-button.is-active small { color: rgba(var(--temple-accent-rgb),0.62); }
+
+.mode-button {
+  border-radius: 1px;
+  color: rgba(206,205,204,0.46);
+  padding: 5px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.mode-button.is-active {
+  color: var(--family-parchment);
+  background: rgba(var(--temple-accent-rgb),0.05);
+  box-shadow: inset 0 -1px rgba(var(--temple-accent-rgb),0.52);
+}
+
+/* Vellum dossiers -------------------------------------------------------- */
+
+.sephirah-folio,
+.path-folio,
+.study-drawer,
+.contemplation-card {
+  border-radius: 2px;
+  border: 1px solid rgba(217,184,109,0.18);
+  background:
+    linear-gradient(155deg, rgba(18,12,15,0.86), rgba(5,4,10,0.82)),
+    radial-gradient(circle at 18% 10%, rgba(var(--temple-accent-rgb),0.05), transparent 35%);
+  box-shadow:
+    inset 0 0 58px rgba(0,0,0,0.48),
+    inset 0 1px rgba(255,239,200,0.035),
+    0 22px 60px rgba(0,0,0,0.48),
+    0 0 30px rgba(var(--temple-accent-rgb),0.035);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.sephirah-folio {
+  width: min(400px, 36vw);
+  padding: 18px 18px 17px;
+}
+
+.folio-rule {
+  height: 13px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  margin-bottom: 9px;
+}
+.folio-rule::before,
+.folio-rule::after {
+  content: '';
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(217,184,109,0.7));
+}
+.folio-rule::before { transform: scaleX(-1); }
+.folio-rule::after { transform: none; }
+.folio-rule::before,
+.folio-rule::after { opacity: 0.62; }
+
+.folio-kicker,
+.folio-section-label,
+.study-drawer-header p,
+.contemplation-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(183,176,160,0.52);
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+}
+
+.folio-header h2,
+.study-drawer-header h2,
+.contemplation-card h2 {
+  font-family: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+  color: #eee6d2;
+  font-weight: 700;
+  text-shadow: 0 0 17px rgba(var(--temple-accent-rgb),0.10);
+}
+
+.folio-header h2::first-letter,
+.contemplation-card h2::first-letter {
+  color: var(--temple-accent);
+  text-shadow: 0 0 12px rgba(var(--temple-accent-rgb),0.43);
+}
+
+.folio-gloss,
+.folio-principle,
+.folio-fact dd,
+.study-ritual-line,
+.contemplation-threshold,
+.contemplation-card blockquote {
+  font-family: 'IM Fell English', Georgia, serif;
+}
+
+.folio-section {
+  border-top-color: rgba(217,184,109,0.09);
+}
+
+.folio-fact {
+  border-top-color: rgba(217,184,109,0.055);
+}
+.folio-fact dt {
+  color: rgba(176,171,160,0.43);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+}
+.folio-fact dd { color: rgba(230,224,211,0.75); }
+
+.folio-source-note,
+.source-ledger summary,
+.source-record p,
+.source-record-head span {
+  color: rgba(190,184,171,0.42);
+}
+
+.folio-dispute { color: rgba(226,189,126,0.74); }
+
+.folio-close,
+.contemplation-close,
+.study-drawer-header button {
+  border-radius: 1px;
+  border-color: rgba(217,184,109,0.14);
+  color: rgba(235,228,210,0.58);
+}
+
+.contemplation-prompt,
+.study-ritual-line,
+.contemplation-card blockquote {
+  border-left-color: rgba(var(--temple-accent-rgb),0.38);
+  color: rgba(236,228,210,0.72);
+  font-style: italic;
+}
+
+.enter-realm-button,
+.contemplation-enter,
+.path-link-button {
+  border-radius: 1px;
+  border-color: rgba(217,184,109,0.22);
+  background: linear-gradient(105deg, rgba(var(--temple-accent-rgb),0.075), rgba(217,184,109,0.018));
+  color: #eee5cf;
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+.enter-realm-button:hover,
+.contemplation-enter:hover,
+.path-link-button:hover {
+  border-color: rgba(var(--temple-accent-rgb),0.55);
+  box-shadow: 0 0 20px rgba(var(--temple-accent-rgb),0.055);
+}
+
+.source-record {
+  border-radius: 1px;
+  background: rgba(217,184,109,0.018);
+  border-color: rgba(217,184,109,0.08);
+}
+.source-record-head {
+  color: rgba(238,230,212,0.72);
+  font-family: 'Cinzel', serif;
+}
+.source-record .source-locator { color: rgba(226,188,113,0.65); }
+
+/* Status / actions -------------------------------------------------------- */
+
+.hud-bottom {
+  bottom: max(14px, env(safe-area-inset-bottom));
+}
+
+.status-chip {
+  border-radius: 1px;
+  padding: 8px 11px;
+  border: 1px solid rgba(217,184,109,0.14);
+  background: rgba(5,3,13,0.62);
+  color: rgba(224,219,207,0.66);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 18px rgba(var(--temple-accent-rgb),0.02), 0 8px 24px rgba(0,0,0,0.32);
+}
+.status-dot {
+  width: 5px; height: 5px;
+  background: var(--temple-accent);
+  color: var(--temple-accent);
+  box-shadow: 0 0 9px rgba(var(--temple-accent-rgb),0.92), 0 0 18px rgba(var(--temple-accent-rgb),0.32);
+}
+
+.control-button {
+  border-radius: 1px;
+  border-color: rgba(217,184,109,0.18);
+  background: rgba(5,3,13,0.60);
+  color: rgba(236,229,214,0.72);
+  padding: 9px 13px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.61rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 20px rgba(var(--temple-accent-rgb),0.015), 0 8px 24px rgba(0,0,0,0.28);
+  transition: color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.control-button.primary {
+  background: linear-gradient(105deg, rgba(var(--temple-accent-rgb),0.08), rgba(217,184,109,0.018));
+  color: #f0e6ce;
+}
+.control-button:not(:disabled):hover,
+.control-button.is-active {
+  border-color: rgba(var(--temple-accent-rgb),0.50);
+  color: #fff4dc;
+  box-shadow: inset 0 0 24px rgba(var(--temple-accent-rgb),0.035), 0 0 20px rgba(var(--temple-accent-rgb),0.055);
+}
+
+.xr-message {
+  color: rgba(225,215,195,0.68);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Ritual phrases */
+.ritual-cue p {
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(var(--temple-accent-rgb),0.44);
+  letter-spacing: 0.24em;
+}
+.ritual-cue blockquote {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-style: italic;
+  color: rgba(245,236,216,0.88);
+  text-shadow: 0 2px 22px rgba(0,0,0,0.92), 0 0 18px rgba(var(--temple-accent-rgb),0.10);
+}
+
+/* Pure vision hides the instrument frame until needed. */
+.mode-vision.phase-realm .temple-engraving,
+.mode-vision.phase-path .temple-engraving,
+.mode-vision.phase-realm .temple-marginalia,
+.mode-vision.phase-path .temple-marginalia {
+  opacity: 0.08;
+}
+.mode-vision.phase-realm .experience-mode-selector,
+.mode-vision.phase-path .experience-mode-selector {
+  opacity: 0.16;
+}
+.mode-vision.phase-realm .experience-mode-selector:hover,
+.mode-vision.phase-path .experience-mode-selector:hover,
+.mode-vision.phase-realm .experience-mode-selector:focus-within,
+.mode-vision.phase-path .experience-mode-selector:focus-within {
+  opacity: 0.88;
+}
+
+/* Responsive Fold choreography ------------------------------------------- */
+
+@media (max-width: 760px) {
+  .ring-one { width: 128vw; }
+  .ring-two { width: 98vw; }
+
+  .threshold-content {
+    min-height: 100dvh;
+    padding-top: max(24px, calc(env(safe-area-inset-top) + 14px));
+    padding-bottom: max(24px, calc(env(safe-area-inset-bottom) + 18px));
+  }
+  .threshold-blackletter { font-size: clamp(3rem, 16vw, 5.1rem); }
+  .threshold-subtitle { letter-spacing: 0.27em; font-size: 0.62rem; }
+  .threshold-seal-stage { width: min(36vh, 70vw, 300px); margin-top: 8px; }
+  .threshold-copy { max-width: 92%; font-size: 0.72rem; }
+  .threshold-enter { width: min(330px, 90vw); min-height: 47px; }
+
+  .hud-top {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .title-lockup {
+    max-width: 76vw;
+    gap: 3px;
+  }
+  .hud-seal { display: none; }
+  .title-copy { padding-top: 0; }
+  .title-lockup h1 { font-size: clamp(1.38rem, 6.3vw, 2.2rem); }
+  .eyebrow { font-size: 0.47rem; letter-spacing: 0.12em; }
+  .subtitle { max-width: 88vw; font-size: 0.64rem; line-height: 1.34; }
+  .title-engraving { width: 54vw; margin-top: 2px; }
+
+  .mode-stack {
+    right: max(9px, env(safe-area-inset-right));
+    top: max(9px, env(safe-area-inset-top));
+  }
+  .experience-mode-button {
+    min-width: 0;
+    padding: 5px 6px 4px;
+    font-size: 0.51rem;
+  }
+  .experience-mode-button small { display: none; }
+  .mode-button { padding: 4px 7px; font-size: 0.48rem; }
+
+  .mode-study .title-lockup { padding-top: 49px; }
+  .mode-contemplation .title-lockup { padding-top: 36px; }
+
+  .sephirah-folio,
+  .study-drawer {
+    left: max(10px, env(safe-area-inset-left));
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(62px, calc(env(safe-area-inset-bottom) + 52px));
+    border-radius: 2px;
+    max-height: min(50dvh, 440px);
+  }
+  .sephirah-folio { padding: 14px 14px 13px; }
+
+  .status-chip {
+    max-width: 54vw;
+    padding: 7px 9px;
+    font-size: 0.50rem;
+  }
+  .control-button {
+    padding: 8px 10px;
+    font-size: 0.53rem;
+  }
+
+  .temple-marginalia { opacity: 0.55; }
+  .glyph-5, .glyph-6, .glyph-9, .glyph-10 { display: none; }
+}
+
+@media (max-width: 420px) {
+  .threshold-registers { display: none; }
+  .threshold-footnote { max-width: 88%; }
+  .threshold-copy { margin-bottom: 12px; }
+  .mode-stack { max-width: 58vw; }
+  .experience-mode-selector { width: auto; }
+  .status-chip { max-width: 50vw; }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .threshold-content {
+    min-height: 100dvh;
+    display: grid;
+    grid-template-columns: minmax(240px, 0.8fr) minmax(290px, 1.2fr);
+    grid-template-rows: auto auto auto auto auto;
+    column-gap: 24px;
+    align-content: center;
+    text-align: left;
+    padding: max(12px, env(safe-area-inset-top)) max(26px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(26px, env(safe-area-inset-left));
+  }
+  .threshold-ordinal,
+  .threshold-rule,
+  .threshold-title,
+  .threshold-invocation,
+  .threshold-copy,
+  .threshold-enter,
+  .threshold-registers,
+  .threshold-footnote { grid-column: 2; }
+  .threshold-seal-stage {
+    grid-column: 1;
+    grid-row: 1 / span 8;
+    width: min(72vh, 33vw, 320px);
+    margin: 0 auto;
+    align-self: center;
+  }
+  .threshold-rule { justify-self: stretch; width: 100%; }
+  .threshold-title { justify-items: start; }
+  .threshold-blackletter { font-size: clamp(2.6rem, 7.5vw, 4.6rem); }
+  .threshold-subtitle { font-size: 0.56rem; }
+  .threshold-copy { margin: 3px 0 9px; font-size: 0.67rem; }
+  .threshold-enter { width: min(360px, 100%); }
+  .threshold-registers { margin-top: 8px; }
+  .threshold-footnote { margin-top: 6px; }
+
+  .title-lockup { max-width: 54vw; }
+  .hud-seal { display: none; }
+  .mode-stack { top: max(7px, env(safe-area-inset-top)); }
+  .title-lockup h1 { font-size: clamp(1.18rem, 3.8vw, 1.8rem); }
+  .subtitle { max-width: 52vw; font-size: 0.58rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .temple-aurora,
+  .temple-shimmer,
+  .temple-engraving,
+  .marginal-glyph,
+  .living-tree-seal,
+  .living-tree-orbit,
+  .seal-paths line,
+  .seal-node-aura,
+  .seal-node-core,
+  .threshold-blackletter,
+  .threshold-enter-mark {
+    animation: none !important;
+  }
+  .temple-threshold,
+  .app-shell canvas {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .transition-gate,
+  .transition-gate-aura,
+  .transition-ring,
+  .transition-gate-star {
+    animation: none !important;
+  }
+}
+
+/* M4.7 — ingress-safe return controls ------------------------------------
+   The return affordances stay visible as ritual furniture while the realm is
+   seating, but they cannot accept a stale Android touch until a fresh pointer
+   cycle is possible. */
+.control-button.primary.is-arming:disabled {
+  opacity: 0.58;
+  color: rgba(226, 216, 193, 0.56);
+  border-color: rgba(var(--temple-accent-rgb), 0.20);
+  background:
+    linear-gradient(105deg, rgba(var(--temple-accent-rgb), 0.035), rgba(217,184,109,0.012));
+  box-shadow:
+    inset 0 0 18px rgba(var(--temple-accent-rgb), 0.018),
+    0 8px 24px rgba(0,0,0,0.24);
+  cursor: wait;
+  animation: returnSealSettle 1.15s ease-in-out both;
+}
+
+.control-button.primary.is-armed {
+  animation: returnSealArmed 420ms ease-out both;
+}
+
+@keyframes returnSealSettle {
+  0% { opacity: 0.24; letter-spacing: 0.14em; }
+  55% { opacity: 0.46; }
+  100% { opacity: 0.58; letter-spacing: 0.09em; }
+}
+
+@keyframes returnSealArmed {
+  from {
+    border-color: rgba(var(--temple-accent-rgb), 0.62);
+    box-shadow: 0 0 26px rgba(var(--temple-accent-rgb), 0.12);
+  }
+  to {
+    border-color: rgba(217,184,109,0.18);
+    box-shadow: inset 0 0 20px rgba(var(--temple-accent-rgb),0.015), 0 8px 24px rgba(0,0,0,0.28);
+  }
+}
+
+/* The dossier now reads slightly more like an illuminated plate without
+   changing its layout or information density. */
+.sephirah-folio,
+.path-folio,
+.contemplation-card,
+.study-drawer {
+  overflow: hidden;
+}
+
+.sephirah-folio::before,
+.path-folio::before,
+.contemplation-card::before,
+.study-drawer::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  border: 1px solid rgba(var(--temple-accent-rgb), 0.045);
+  clip-path: polygon(0 0, 18px 0, 18px 1px, 1px 1px, 1px 18px, 0 18px,
+                     0 100%, 0 calc(100% - 18px), 1px calc(100% - 18px), 1px calc(100% - 1px), 18px calc(100% - 1px), 18px 100%,
+                     100% 100%, calc(100% - 18px) 100%, calc(100% - 18px) calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) calc(100% - 18px), 100% calc(100% - 18px),
+                     100% 0, 100% 18px, calc(100% - 1px) 18px, calc(100% - 1px) 1px, calc(100% - 18px) 1px, calc(100% - 18px) 0);
+  opacity: 0.72;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control-button.primary.is-arming:disabled,
+  .control-button.primary.is-armed {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================\n   M4.8 — ORACULAR INTERFACE / NO-BOX FAMILY PASS\n   Selection is now a living margin and threshold instrument, not a modal card.\n   ========================================================================== */
+
+/* The old folio overflow regression is explicitly closed for any remaining\n   documentary surfaces. M4.7's engraving furniture must never disable touch\n   scrolling. */
+.study-drawer,
+.source-ledger-list {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Registers become manuscript underlines rather than boxed segmented controls. */
+.experience-mode-selector,
+.mode-selector {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 0 !important;
+  gap: 12px;
+}
+
+.experience-mode-button,
+.mode-button {
+  position: relative;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 5px 2px 7px !important;
+}
+
+.experience-mode-button::after,
+.mode-button::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--temple-accent-rgb),0.9), transparent);
+  box-shadow: 0 0 10px rgba(var(--temple-accent-rgb),0.35);
+  transition: left 220ms ease, right 220ms ease, opacity 220ms ease;
+  opacity: 0;
+}
+
+.experience-mode-button.is-active::after,
+.mode-button.is-active::after {
+  left: 0;
+  right: 0;
+  opacity: 1;
+}
+
+.experience-mode-button.is-active,
+.mode-button.is-active {
+  background: transparent !important;
+  box-shadow: none !important;
+  text-shadow: 0 0 14px rgba(var(--temple-accent-rgb),0.34);
+}
+
+/* HUD actions become sigil labels / rules, never rectangular buttons. */
+.status-chip,
+.control-button {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.status-chip {
+  position: relative;
+  padding-left: 18px;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.9);
+}
+
+.status-chip::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 11px;
+  height: 1px;
+  background: rgba(var(--temple-accent-rgb),0.72);
+  box-shadow: 0 0 8px rgba(var(--temple-accent-rgb),0.42);
+}
+
+.control-button {
+  position: relative;
+  padding: 8px 3px 9px !important;
+  color: rgba(235,226,208,0.7) !important;
+}
+
+.control-button::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: 3px;
+  height: 1px;
+  background: rgba(var(--temple-accent-rgb),0.68);
+  transition: left 180ms ease, right 180ms ease, opacity 180ms ease;
+  opacity: 0.42;
+}
+
+.control-button:not(:disabled):hover::after,
+.control-button:not(:disabled):focus-visible::after,
+.control-button.is-active::after,
+.control-button.is-armed::after {
+  left: 0;
+  right: 0;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------\n   Sephirah invocation — scholar's margin + living threshold.\n   There is deliberately no panel background, rectangle, border or glass card.\n   -------------------------------------------------------------------------- */
+.sephirah-invocation,
+.path-invocation,
+.contemplation-invocation {
+  position: fixed;
+  z-index: 23;
+  left: max(18px, env(safe-area-inset-left));
+  top: max(126px, calc(env(safe-area-inset-top) + 112px));
+  bottom: max(72px, calc(env(safe-area-inset-bottom) + 58px));
+  width: min(430px, 39vw);
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  align-content: start;
+  pointer-events: auto;
+  color: var(--family-parchment);
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.54));
+  animation: invocationManifest 520ms cubic-bezier(.16,.8,.22,1) both;
+}
+
+.sephirah-invocation::after,
+.path-invocation::after,
+.contemplation-invocation::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -13vw;
+  top: -18vh;
+  width: 56vw;
+  height: 100vh;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 34% 48%, rgba(var(--temple-accent-rgb),0.065), transparent 43%),
+    linear-gradient(90deg, rgba(2,2,8,0.72), rgba(2,2,8,0.30) 55%, transparent 88%);
+  mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+@keyframes invocationManifest {
+  from { opacity: 0; transform: translateX(-18px); filter: blur(5px) drop-shadow(0 12px 28px rgba(0,0,0,0.54)); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0) drop-shadow(0 12px 28px rgba(0,0,0,0.54)); }
+}
+
+.invocation-axis {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 11px;
+  pointer-events: none;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  color: rgba(var(--temple-accent-rgb),0.48);
+}
+
+.axis-line {
+  width: 1px;
+  margin: 7px 0;
+  background: linear-gradient(180deg, transparent, rgba(var(--temple-accent-rgb),0.6) 18%, rgba(217,184,109,0.22) 72%, transparent);
+  box-shadow: 0 0 12px rgba(var(--temple-accent-rgb),0.12);
+}
+.axis-star { font-size: 0.55rem; text-shadow: 0 0 12px rgba(var(--temple-accent-rgb),0.72); }
+.axis-diamond { font-size: 0.48rem; opacity: 0.68; }
+
+.invocation-header {
+  padding-left: 27px;
+  padding-right: 46px;
+  margin-bottom: 11px;
+}
+
+.invocation-kicker {
+  margin: 0 0 4px;
+  color: rgba(var(--temple-accent-rgb),0.66);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+}
+
+.invocation-header h2,
+.contemplation-invocation h2 {
+  margin: 0;
+  color: #eee5d2;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: clamp(1.65rem, 4.1vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: 0.035em;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.96), 0 0 26px rgba(var(--temple-accent-rgb),0.13);
+}
+
+.invocation-gloss {
+  margin: 4px 0 0;
+  color: rgba(235,227,213,0.58);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.86rem;
+  font-style: italic;
+}
+
+.invocation-title {
+  margin: 7px 0 0;
+  color: rgba(var(--temple-accent-rgb),0.82);
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.invocation-close {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(235,226,208,0.48);
+  font-family: 'Cinzel', serif;
+  cursor: pointer;
+  padding: 0;
+}
+.invocation-close span { font-size: 1.2rem; line-height: 1; }
+.invocation-close small {
+  margin-top: 3px;
+  font: 0.38rem/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.invocation-close:hover,
+.invocation-close:focus-visible { color: var(--family-parchment); text-shadow: 0 0 12px rgba(var(--temple-accent-rgb),0.42); }
+
+.invocation-registers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 13px;
+  padding: 0 0 8px 27px;
+  margin-bottom: 2px;
+}
+
+.invocation-rune {
+  appearance: none;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: rgba(221,214,202,0.42);
+  padding: 2px 0 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.49rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+}
+.invocation-rune::after {
+  content: '';
+  position: absolute;
+  left: 50%; right: 50%; bottom: 0;
+  height: 1px;
+  background: rgba(var(--temple-accent-rgb),0.74);
+  transition: left 170ms ease, right 170ms ease;
+}
+.invocation-rune.is-active { color: rgba(245,234,213,0.90); }
+.invocation-rune.is-active::after { left: 0; right: 0; }
+.invocation-rune-mark { color: var(--temple-accent); font-size: 0.42rem; opacity: 0.56; }
+.invocation-rune.is-active .invocation-rune-mark { opacity: 1; text-shadow: 0 0 9px rgba(var(--temple-accent-rgb),0.6); }
+
+.invocation-reading {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  padding: 7px 16px 14px 27px;
+  scrollbar-width: none;
+  mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%);
+}
+.invocation-reading::-webkit-scrollbar { display: none; }
+
+.invocation-leaf { animation: invocationLeafIn 280ms ease both; }
+@keyframes invocationLeafIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.invocation-lead {
+  margin: 0 0 10px;
+  max-width: 36em;
+  color: rgba(236,227,211,0.72);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.invocation-leaf blockquote,
+.contemplation-invocation blockquote {
+  margin: 12px 0 14px;
+  padding: 0 0 0 15px;
+  border: 0;
+  position: relative;
+  color: rgba(246,234,211,0.88);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1.48;
+}
+.invocation-leaf blockquote::before,
+.contemplation-invocation blockquote::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(var(--temple-accent-rgb),0.7), transparent);
+}
+
+.invocation-line {
+  display: grid;
+  grid-template-columns: minmax(76px, 0.28fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 5px 0;
+  margin: 0;
+  position: relative;
+}
+.invocation-line + .invocation-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 36%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(217,184,109,0.10), transparent);
+}
+.invocation-line dt,
+.invocation-line dd { margin: 0; }
+.invocation-line dt {
+  color: rgba(var(--temple-accent-rgb),0.46);
+  font: 0.48rem/1.5 'JetBrains Mono', monospace;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.invocation-line dd {
+  color: rgba(231,224,211,0.72);
+  font: 0.72rem/1.48 'IM Fell English', Georgia, serif;
+}
+
+.invocation-source-note,
+.invocation-variant {
+  color: rgba(215,207,191,0.46);
+  font: 0.62rem/1.5 'IM Fell English', Georgia, serif;
+}
+.invocation-variant { color: rgba(229,194,128,0.70); }
+
+.invocation-paths { display: grid; gap: 9px; margin-top: 12px; }
+.invocation-path {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 4px 0 4px 20px;
+  border: 0;
+  background: transparent;
+  color: rgba(239,229,210,0.74);
+  text-align: left;
+  cursor: pointer;
+}
+.invocation-path .path-thread {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 13px;
+  height: 1px;
+  background: rgba(var(--temple-accent-rgb),0.56);
+  box-shadow: 0 0 8px rgba(var(--temple-accent-rgb),0.36);
+  transition: width 180ms ease;
+}
+.invocation-path:hover .path-thread,
+.invocation-path:focus-visible .path-thread { width: 100%; opacity: 0.18; }
+.invocation-path strong { font: 600 0.68rem/1.2 'Cinzel', serif; }
+.invocation-path small { grid-column: 1 / -1; color: rgba(211,204,190,0.40); font: 0.54rem/1.35 'IM Fell English', serif; }
+
+/* Circular threshold action: the enter affordance is a sigil, not a button box. */
+.threshold-sigil {
+  position: relative;
+  justify-self: start;
+  margin: 7px 0 0 27px;
+  width: 118px;
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  appearance: none;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--family-parchment);
+  cursor: pointer;
+  overflow: visible;
+  isolation: isolate;
+}
+.threshold-sigil::before {
+  content: '';
+  position: absolute;
+  inset: 23%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--temple-accent-rgb),0.15), rgba(var(--temple-accent-rgb),0.025) 48%, transparent 72%);
+  box-shadow: 0 0 34px rgba(var(--temple-accent-rgb),0.08);
+  transition: transform 260ms ease, opacity 260ms ease;
+}
+.threshold-orbit {
+  position: absolute;
+  border: 1px solid rgba(var(--temple-accent-rgb),0.55);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.threshold-orbit.orbit-outer { inset: 5%; border-style: dotted; animation: thresholdOrbit 11s linear infinite; }
+.threshold-orbit.orbit-mid { inset: 20%; border-color: rgba(217,184,109,0.48); animation: thresholdOrbit 7s linear infinite reverse; }
+.threshold-orbit.orbit-inner { inset: 34%; border-style: dashed; opacity: 0.62; animation: thresholdOrbit 4.8s linear infinite; }
+@keyframes thresholdOrbit { to { transform: rotate(360deg); } }
+.threshold-core {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #f4dd9e;
+  font-size: 0.78rem;
+  text-shadow: 0 0 14px rgba(var(--temple-accent-rgb),0.88);
+  animation: thresholdCoreBreathe 1.7s ease-in-out infinite alternate;
+}
+@keyframes thresholdCoreBreathe { from { transform: scale(0.82); opacity: 0.55; } to { transform: scale(1.08); opacity: 1; } }
+.threshold-copy {
+  position: absolute;
+  left: 104%;
+  top: 50%;
+  width: min(220px, 26vw);
+  transform: translateY(-50%);
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  white-space: normal;
+}
+.threshold-copy small { color: rgba(var(--temple-accent-rgb),0.54); font: 0.45rem/1 'JetBrains Mono', monospace; letter-spacing: 0.19em; }
+.threshold-copy strong { color: rgba(244,233,213,0.82); font: 600 0.67rem/1.25 'Cinzel', serif; letter-spacing: 0.045em; }
+.threshold-sigil:hover::before,
+.threshold-sigil:focus-visible::before { transform: scale(1.38); opacity: 1; }
+.threshold-sigil:hover .orbit-outer,
+.threshold-sigil:focus-visible .orbit-outer { border-color: rgba(var(--temple-accent-rgb),0.95); }
+
+/* Path invocation is a continuous line between two points, never a window. */
+.path-invocation-thread {
+  position: absolute;
+  left: 27px;
+  right: 56px;
+  top: 82px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(var(--temple-accent-rgb),0.8), rgba(217,184,109,0.26), rgba(var(--temple-accent-rgb),0.8));
+  box-shadow: 0 0 12px rgba(var(--temple-accent-rgb),0.15);
+}
+.path-end { position: absolute; top: -4px; width: 9px; height: 9px; border: 1px solid rgba(var(--temple-accent-rgb),0.72); border-radius: 50%; }
+.path-source { left: -4px; }
+.path-destination { right: -4px; }
+.path-flow { position: absolute; top: -2px; left: 0; width: 28px; height: 5px; background: radial-gradient(ellipse, #fff0c9 0, rgba(var(--temple-accent-rgb),0.8) 32%, transparent 72%); animation: pathInvocationFlow 2.2s linear infinite; }
+@keyframes pathInvocationFlow { from { transform: translateX(0); } to { transform: translateX(min(330px, 30vw)); } }
+.path-invocation-header { margin-top: 10px; }
+.path-invocation-header h2 span { color: var(--temple-accent); }
+.path-reading { padding-top: 18px; }
+.path-documentary-thread { margin-top: 13px; padding-top: 11px; position: relative; }
+.path-documentary-thread::before { content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 1px; background: linear-gradient(90deg, rgba(var(--temple-accent-rgb),0.4), transparent); }
+
+/* Contemplation is a sparse floating inscription. */
+.contemplation-invocation {
+  grid-template-rows: auto auto minmax(0,1fr) auto;
+}
+.contemplation-invocation > .invocation-kicker { padding-left: 27px; }
+.contemplation-invocation > h2,
+.contemplation-invocation > .contemplation-threshold,
+.contemplation-invocation > blockquote { margin-left: 27px; }
+.contemplation-invocation .contemplation-threshold { color: rgba(var(--temple-accent-rgb),0.74); font: 0.74rem/1.5 'Cinzel', serif; }
+
+/* Active study drawer is now a scholar's margin, not an inset card. */
+.study-drawer,
+.study-drawer.path-study-drawer {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding-left: 24px !important;
+  padding-right: 6px !important;
+  overflow-y: auto !important;
+  touch-action: pan-y !important;
+  mask-image: linear-gradient(180deg, transparent, #000 12px, #000 calc(100% - 20px), transparent);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 12px, #000 calc(100% - 20px), transparent);
+}
+.study-drawer::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(var(--temple-accent-rgb),0.58), transparent);
+  box-shadow: 0 0 14px rgba(var(--temple-accent-rgb),0.12);
+  pointer-events: none;
+}
+.study-drawer::before { display: none !important; }
+
+.source-ledger,
+.source-record,
+.source-ledger-list {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.source-record { padding-left: 12px; position: relative; }
+.source-record::before { content: '·'; position: absolute; left: 0; top: 1px; color: rgba(var(--temple-accent-rgb),0.52); }
+
+/* Selection should transform the Tree itself. The DOM invocation does not\n   need to cover it with a card, and the unfocused geometry recedes. */
+.phase-tree .temple-aurora { transition: opacity 420ms ease; }
+
+/* --------------------------------------------------------------------------\n   Fold choreography: keep the threshold sigil and register controls always\n   reachable; only the reading leaf scrolls. This directly fixes the previous\n   trapped ENTER action.\n   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  .sephirah-invocation,
+  .path-invocation,
+  .contemplation-invocation {
+    left: max(13px, env(safe-area-inset-left));
+    right: max(13px, env(safe-area-inset-right));
+    width: auto;
+    top: max(148px, calc(env(safe-area-inset-top) + 132px));
+    bottom: max(54px, calc(env(safe-area-inset-bottom) + 46px));
+    grid-template-columns: minmax(0,1fr) 108px;
+    grid-template-rows: auto auto minmax(0,1fr);
+    column-gap: 10px;
+  }
+
+  .sephirah-invocation::after,
+  .path-invocation::after,
+  .contemplation-invocation::after {
+    left: -8vw;
+    top: -10vh;
+    width: 108vw;
+    height: 78vh;
+    background:
+      radial-gradient(ellipse at 28% 52%, rgba(var(--temple-accent-rgb),0.055), transparent 39%),
+      linear-gradient(90deg, rgba(2,2,8,0.72), rgba(2,2,8,0.22) 68%, transparent 100%);
+  }
+
+  .invocation-header { grid-column: 1 / 2; grid-row: 1; padding-left: 20px; padding-right: 18px; }
+  .invocation-header h2,
+  .contemplation-invocation h2 { font-size: clamp(1.55rem, 7vw, 2.45rem); }
+  .invocation-registers { grid-column: 1 / 2; grid-row: 2; padding-left: 20px; gap: 3px 10px; }
+  .invocation-reading { grid-column: 1 / 2; grid-row: 3; padding-left: 20px; padding-right: 8px; padding-bottom: 8px; }
+  .invocation-axis { left: -1px; }
+  .invocation-close { right: 1px; }
+
+  .threshold-sigil {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    align-self: center;
+    justify-self: center;
+    width: 92px;
+    margin: 0;
+  }
+  .threshold-copy {
+    left: 50%;
+    top: calc(100% + 7px);
+    transform: translateX(-50%);
+    width: 118px;
+    text-align: center;
+  }
+  .threshold-copy small { font-size: 0.38rem; }
+  .threshold-copy strong { font-size: 0.52rem; }
+
+  .invocation-line { grid-template-columns: 66px minmax(0,1fr); gap: 8px; }
+  .invocation-line dt { font-size: 0.42rem; }
+  .invocation-line dd { font-size: 0.64rem; }
+  .invocation-lead { font-size: 0.72rem; }
+  .invocation-leaf blockquote { font-size: 0.82rem; margin-top: 8px; }
+
+  .path-invocation-thread { left: 20px; right: 116px; top: 77px; }
+  .path-reading { padding-top: 14px; }
+
+  .contemplation-invocation > .invocation-kicker,
+  .contemplation-invocation > h2,
+  .contemplation-invocation > .contemplation-threshold,
+  .contemplation-invocation > blockquote { margin-left: 20px; }
+  .contemplation-invocation > .invocation-kicker { padding-left: 0; grid-column: 1; }
+  .contemplation-invocation > h2 { grid-column: 1; }
+  .contemplation-invocation > .contemplation-threshold,
+  .contemplation-invocation > blockquote { grid-column: 1; }
+
+  .mode-stack { gap: 7px; }
+  .experience-mode-selector,
+  .mode-selector { gap: 7px; }
+}
+
+@media (max-width: 430px) {
+  .sephirah-invocation,
+  .path-invocation,
+  .contemplation-invocation {
+    top: max(136px, calc(env(safe-area-inset-top) + 120px));
+    grid-template-columns: minmax(0,1fr) 82px;
+    column-gap: 5px;
+  }
+  .threshold-sigil { width: 74px; }
+  .threshold-copy { width: 92px; }
+  .threshold-copy strong { font-size: 0.46rem; }
+  .invocation-registers { gap: 2px 8px; }
+  .invocation-rune { font-size: 0.42rem; }
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .sephirah-invocation,
+  .path-invocation,
+  .contemplation-invocation {
+    top: max(80px, calc(env(safe-area-inset-top) + 72px));
+    bottom: max(45px, calc(env(safe-area-inset-bottom) + 38px));
+    width: min(390px, 43vw);
+    left: max(15px, env(safe-area-inset-left));
+    right: auto;
+    grid-template-columns: minmax(0,1fr) 86px;
+  }
+  .invocation-header h2,
+  .contemplation-invocation h2 { font-size: clamp(1.35rem, 4.4vw, 2.2rem); }
+  .threshold-sigil { width: 76px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sephirah-invocation,
+  .path-invocation,
+  .contemplation-invocation,
+  .invocation-leaf,
+  .threshold-orbit,
+  .threshold-core,
+  .path-flow {
+    animation: none !important;
+  }
+}
+
+/* M4.8 ingress choreography — the selected sphere seems to dilate into a law\n   rather than being hidden behind a loading screen. */
+.transition-ray-field {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: min(68vw, 620px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.transition-ray-field span {
+  --angle: calc(var(--ray) * 30deg);
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 48%; height: 1px;
+  transform-origin: left center;
+  transform: rotate(var(--angle)) scaleX(0.05);
+  background: linear-gradient(90deg, rgba(var(--temple-accent-rgb),0.5), transparent 78%);
+  opacity: 0;
+  animation: transitionRayOpen 1.42s cubic-bezier(.16,.72,.18,1) infinite;
+  animation-delay: calc(var(--ray) * -47ms);
+}
+@keyframes transitionRayOpen {
+  0% { opacity: 0; transform: rotate(var(--angle)) scaleX(0.04); }
+  34% { opacity: 0.34; }
+  100% { opacity: 0; transform: rotate(var(--angle)) scaleX(1); }
+}
+.transition-hebrew {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, 42px);
+  color: rgba(var(--temple-accent-rgb),0.30);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.13em;
+  white-space: nowrap;
+}
+.transition-rite-words {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: min(520px, 82vw);
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: space-between;
+  color: rgba(var(--temple-accent-rgb),0.34);
+  font: 0.46rem/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+}
+.transition-rite-words span {
+  opacity: 0;
+  animation: transitionWordAppear 1.25s ease-in-out infinite;
+  animation-delay: calc(var(--word) * 180ms);
+}
+@keyframes transitionWordAppear {
+  0%, 14% { opacity: 0; transform: translateY(6px); }
+  38%, 68% { opacity: 0.58; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+.transition-entering .transition-gate-mark {
+  animation: transitionApertureDive 1.72s cubic-bezier(.16,.78,.18,1) infinite;
+}
+@keyframes transitionApertureDive {
+  0% { transform: scale(0.72); filter: blur(0); }
+  52% { transform: scale(1.08); filter: blur(0); }
+  100% { transform: scale(2.9); filter: blur(2px); opacity: 0.08; }
+}
+/* M4.8 marker: oracular no-box selection / resilient realm ignition. */
+
+/* M4.8 layout normalization for the non-Sephirah invocations. */
+.path-invocation { grid-template-rows: auto minmax(0, 1fr) auto; }
+.contemplation-invocation { grid-template-rows: auto auto auto minmax(0, 1fr) auto; }
+.contemplation-invocation > .invocation-kicker { grid-row: 1; }
+.contemplation-invocation > h2 { grid-row: 2; }
+.contemplation-invocation > .contemplation-threshold { grid-row: 3; }
+.contemplation-invocation > blockquote { grid-row: 4; min-height: 0; overflow-y: auto; touch-action: pan-y; }
+.contemplation-invocation > .threshold-sigil { grid-row: 5; }
+
+@media (max-width: 760px) {
+  .path-invocation { grid-template-rows: auto minmax(0, 1fr); }
+  .path-invocation .path-invocation-header { grid-column: 1; grid-row: 1; }
+  .path-invocation .path-reading { grid-column: 1; grid-row: 2; }
+  .path-invocation .path-threshold-sigil { grid-column: 2; grid-row: 1 / 3; }
+
+  .contemplation-invocation { grid-template-rows: auto auto auto minmax(0, 1fr); }
+  .contemplation-invocation > .invocation-kicker { grid-column: 1; grid-row: 1; }
+  .contemplation-invocation > h2 { grid-column: 1; grid-row: 2; }
+  .contemplation-invocation > .contemplation-threshold { grid-column: 1; grid-row: 3; }
+  .contemplation-invocation > blockquote { grid-column: 1; grid-row: 4; }
+  .contemplation-invocation > .contemplation-threshold-sigil { grid-column: 2; grid-row: 1 / 5; }
+}
+
+/* The ceremonial threshold also sheds remaining rectangular chrome. */
+.threshold-veil::before {
+  border: 0 !important;
+  box-shadow: none !important;
+  background:
+    linear-gradient(90deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) left top / 82px 1px no-repeat,
+    linear-gradient(180deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) left top / 1px 82px no-repeat,
+    linear-gradient(270deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) right top / 82px 1px no-repeat,
+    linear-gradient(180deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) right top / 1px 82px no-repeat,
+    linear-gradient(90deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) left bottom / 82px 1px no-repeat,
+    linear-gradient(0deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) left bottom / 1px 82px no-repeat,
+    linear-gradient(270deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) right bottom / 82px 1px no-repeat,
+    linear-gradient(0deg, rgba(217,184,109,0.22) 0 42px, transparent 42px) right bottom / 1px 82px no-repeat;
+}
+
+.threshold-enter {
+  width: auto !important;
+  min-width: min(330px, 82vw);
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  position: relative;
+  overflow: visible;
+  padding: 15px 54px 16px 12px !important;
+}
+.threshold-enter::before,
+.threshold-enter::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(217,184,109,0.48), transparent);
+  transition: transform 240ms ease, opacity 240ms ease;
+}
+.threshold-enter::before { top: 8px; transform: scaleX(0.52); opacity: 0.42; }
+.threshold-enter::after { bottom: 7px; transform: scaleX(0.88); opacity: 0.72; }
+.threshold-enter:hover::before,
+.threshold-enter:focus-visible::before { transform: scaleX(0.92); opacity: 0.86; }
+.threshold-enter:hover::after,
+.threshold-enter:focus-visible::after { transform: scaleX(0.56); opacity: 1; }
+.threshold-enter-mark {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  width: 42px;
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  border: 1px dotted rgba(217,184,109,0.42);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(var(--temple-accent-rgb),0.09);
+}
+
+/* ==========================================================================\n   M4.9 — TREE-FIRST BOOT / FIRST LIGHT\n   The macro Tree must become visible before any speculative fractal shader\n   compilation. The ceremonial threshold already provides its own veil, so the\n   Canvas no longer pays a full-screen blur/filter compositor tax while hidden.\n   ========================================================================== */
+.threshold-open:not(.threshold-leaving) canvas {
+  filter: none !important;
+  transform: none !important;
+  opacity: 0.34;
+}
+
+.threshold-leaving canvas {
+  filter: none !important;
+  transform: none !important;
+  opacity: 1;
+}
+
+.threshold-cleared canvas {
+  filter: none !important;
+  transform: none !important;
+  opacity: 1;
+}
+
+.tree-awakening {
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 49%, rgba(var(--temple-accent-rgb), 0.055), transparent 34%),
+    radial-gradient(circle at 50% 50%, rgba(4, 4, 11, 0.18), rgba(4, 4, 11, 0.02) 58%, transparent 76%);
+  animation: treeFirstLightIn 420ms ease both;
+}
+
+.tree-awakening-seal {
+  width: min(48vh, 54vw, 410px);
+  aspect-ratio: 1;
+  opacity: 0.46;
+  filter: drop-shadow(0 0 24px rgba(var(--temple-accent-rgb), 0.12));
+  animation: treeFirstLightBreathe 2.2s ease-in-out infinite alternate;
+}
+
+.tree-awakening-copy {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + min(25vh, 210px));
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: min(88vw, 420px);
+  text-align: center;
+}
+
+.tree-awakening-copy span {
+  color: rgba(var(--temple-accent-rgb), 0.58);
+  font: 0.5rem/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.32em;
+}
+
+.tree-awakening-copy strong {
+  color: rgba(240, 230, 207, 0.68);
+  font: 500 0.72rem/1.2 'Cinzel', serif;
+  letter-spacing: 0.18em;
+}
+
+.tree-awakening-copy i {
+  color: rgba(216, 205, 188, 0.42);
+  font: italic 0.72rem/1.3 'IM Fell English', Georgia, serif;
+}
+
+@keyframes treeFirstLightIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes treeFirstLightBreathe {
+  from { transform: scale(0.985) rotate(-0.2deg); opacity: 0.34; }
+  to { transform: scale(1.018) rotate(0.2deg); opacity: 0.54; }
+}
+
+@media (max-width: 720px) {
+  .tree-awakening-seal { width: min(42vh, 66vw, 320px); }
+  .tree-awakening-copy { top: calc(50% + min(21vh, 160px)); }
+  .tree-awakening-copy strong { font-size: 0.62rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-awakening,
+  .tree-awakening-seal { animation: none !important; }
+}
+
+/* M4.10 runtime lock: a tiny physical-QA seal makes stale Vite processes
+   immediately obvious before the user enters the temple. */
+.threshold-runtime {
+  color: rgba(238, 221, 168, 0.72);
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+}
+
+/* ==========================================================================\n   M4.11 — LIVING TREE INSTRUMENT\n   The canonical graph remains untouched; the interface now behaves like an\n   astrolabe whose relationships wake when a Sephirah is invoked.\n   ========================================================================== */
+
+.title-lockup,
+.title-copy,
+.title-copy h1,
+.title-copy .subtitle,
+.mode-stack {
+  transition:
+    opacity 360ms ease,
+    transform 520ms cubic-bezier(.16,.78,.18,1),
+    filter 360ms ease;
+}
+
+.tree-focus-active.phase-tree .title-lockup {
+  opacity: 0.74;
+  transform: translateY(-4px) scale(0.94);
+  transform-origin: left top;
+}
+
+.tree-focus-active.phase-tree .title-copy h1 {
+  text-shadow:
+    0 0 22px rgba(var(--temple-accent-rgb),0.10),
+    0 0 62px rgba(var(--temple-accent-rgb),0.08);
+}
+
+.tree-focus-active.phase-tree .title-engraving {
+  opacity: 0.48;
+}
+
+.tree-focus-active.phase-tree .temple-engraving.ring-one,
+.path-focus-active.phase-tree .temple-engraving.ring-one {
+  opacity: 0.36;
+  border-color: rgba(var(--temple-accent-rgb),0.20);
+  box-shadow: 0 0 62px rgba(var(--temple-accent-rgb),0.055);
+}
+
+.tree-focus-active.phase-tree .temple-engraving.ring-two,
+.path-focus-active.phase-tree .temple-engraving.ring-two {
+  opacity: 0.26;
+  border-color: rgba(var(--temple-accent-rgb),0.13);
+}
+
+/* A selection is an invocation, so the background itself gives one very slow
+   response instead of introducing another panel or modal. */
+.tree-focus-active.phase-tree .temple-aurora {
+  opacity: 0.66;
+  transform: scale(1.025);
+}
+
+.tree-focus-active.phase-tree .temple-shimmer {
+  opacity: 0.32;
+}
+
+/* The scholar's margin floats above the Tree. A faint light wash at its inner
+   edge clarifies the relationship without ever drawing a rectangular card. */
+.sephirah-invocation::before,
+.path-invocation::before {
+  content: '';
+  position: absolute;
+  top: 4%;
+  bottom: 6%;
+  left: -22px;
+  width: 120px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at left, rgba(var(--temple-accent-rgb),0.08), transparent 68%);
+  filter: blur(9px);
+  opacity: 0.72;
+}
+
+.invocation-rune {
+  transition: color 220ms ease, transform 220ms ease, text-shadow 220ms ease;
+}
+.invocation-rune:hover,
+.invocation-rune:focus-visible {
+  transform: translateY(-1px);
+  color: rgba(245,234,213,0.92);
+  text-shadow: 0 0 13px rgba(var(--temple-accent-rgb),0.24);
+}
+.invocation-rune.is-active {
+  text-shadow: 0 0 14px rgba(var(--temple-accent-rgb),0.24);
+}
+
+.threshold-sigil {
+  transition: transform 280ms cubic-bezier(.18,.82,.2,1), filter 260ms ease;
+}
+.threshold-sigil:hover,
+.threshold-sigil:focus-visible {
+  transform: translateY(-2px) scale(1.035);
+  filter: drop-shadow(0 0 18px rgba(var(--temple-accent-rgb),0.17));
+}
+.threshold-sigil:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/* Fold portrait: the title becomes manuscript furniture instead of consuming
+   the same center stage as the living Tree. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .tree-focus-active.phase-tree .title-lockup {
+    opacity: 0.62;
+    transform: translateY(-8px) scale(0.88);
+  }
+  .tree-focus-active.phase-tree .subtitle {
+    max-width: 68vw;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 620px) {
+  .tree-focus-active.phase-tree .title-lockup {
+    opacity: 0.58;
+    transform: translateY(-6px) scale(0.88);
+  }
+  .tree-focus-active.phase-tree .mode-stack {
+    transform: translateY(-2px) scale(0.94);
+    transform-origin: right top;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-lockup,
+  .title-copy,
+  .title-copy h1,
+  .title-copy .subtitle,
+  .mode-stack,
+  .invocation-rune,
+  .threshold-sigil {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================\n   M4.12 — MOTION-SAFE DESCENT + PATH LENS\n   Raw touch/wheel input is now rate-governed in R3F. These styles expose the\n   documentary path layer without turning the Tree back into a boxed dashboard.\n   ========================================================================== */
+
+.path-glyph-inscription {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    "letter cosmic"
+    "key key";
+  align-items: center;
+  column-gap: 5px;
+  min-width: 38px;
+  color: rgba(231, 221, 196, 0.52);
+  text-align: center;
+  text-shadow:
+    0 0 8px rgba(var(--temple-accent-rgb), 0.16),
+    0 0 18px rgba(0, 0, 0, 0.85);
+  opacity: 0.62;
+  transform: translateZ(0) scale(0.92);
+  transition: opacity 220ms ease, transform 320ms cubic-bezier(.16,.78,.18,1), color 220ms ease;
+  white-space: nowrap;
+}
+
+.path-glyph-inscription::before,
+.path-glyph-inscription::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--temple-accent-rgb), 0.32));
+}
+.path-glyph-inscription::before { right: calc(100% + 5px); }
+.path-glyph-inscription::after { left: calc(100% + 5px); transform: scaleX(-1); }
+
+.path-glyph-letter {
+  grid-area: letter;
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 1rem;
+  line-height: 1;
+  color: rgba(245, 232, 195, 0.82);
+}
+.path-glyph-cosmic {
+  grid-area: cosmic;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  line-height: 1;
+  color: rgba(var(--temple-accent-rgb), 0.82);
+}
+.path-glyph-inscription small {
+  grid-area: key;
+  margin-top: 3px;
+  font: 0.38rem/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.22em;
+  color: rgba(218, 207, 184, 0.40);
+}
+.path-glyph-inscription.is-operative::after,
+.path-glyph-inscription.is-operative::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 220, 125, 0.48));
+}
+.path-glyph-inscription.is-selected {
+  opacity: 1;
+  color: #fff0c6;
+  transform: translateZ(0) scale(1.12);
+  filter: drop-shadow(0 0 8px rgba(var(--temple-accent-rgb), 0.24));
+}
+
+.path-documentary-sigil {
+  position: relative;
+  width: 84px;
+  aspect-ratio: 1;
+  margin: 16px 0 18px 6px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(var(--temple-accent-rgb), 0.22);
+  border-radius: 50%;
+  color: rgba(241, 227, 191, 0.82);
+}
+.path-documentary-sigil::before,
+.path-documentary-sigil::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px dotted rgba(var(--temple-accent-rgb), 0.25);
+  border-radius: 50%;
+  animation: pathLensTurn 14s linear infinite;
+}
+.path-documentary-sigil::after {
+  inset: 20px;
+  animation-direction: reverse;
+  animation-duration: 9s;
+}
+.path-documentary-sigil strong {
+  font: 400 1.5rem/1 'IM Fell English', Georgia, serif;
+}
+.path-documentary-sigil span {
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(var(--temple-accent-rgb), 0.9);
+  font: 0.86rem/1 'Cinzel', serif;
+}
+.path-documentary-sigil small {
+  position: absolute;
+  bottom: -14px;
+  font: 0.42rem/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.22em;
+  color: rgba(220, 209, 187, 0.44);
+}
+
+.path-lens-seal {
+  align-self: end;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  align-items: center;
+  padding: 10px 0 2px;
+  color: rgba(229, 218, 194, 0.58);
+}
+.path-lens-seal > span {
+  grid-row: 1 / 3;
+  width: 42px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px dotted rgba(var(--temple-accent-rgb), 0.30);
+  border-radius: 50%;
+  color: rgba(var(--temple-accent-rgb), 0.84);
+  font: 1rem/1 'IM Fell English', Georgia, serif;
+  animation: pathLensTurn 12s linear infinite;
+}
+.path-lens-seal small {
+  font: 0.42rem/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.24em;
+  color: rgba(var(--temple-accent-rgb), 0.52);
+}
+.path-lens-seal strong {
+  font: italic 0.72rem/1.25 'IM Fell English', Georgia, serif;
+  font-weight: 400;
+  color: rgba(227, 216, 195, 0.56);
+}
+
+.invocation-path.is-inspectable small::before {
+  content: '◇ ';
+  color: rgba(var(--temple-accent-rgb), 0.56);
+}
+.invocation-path.is-operative small::before {
+  content: '✶ ';
+  color: rgba(255, 220, 125, 0.78);
+}
+
+@keyframes pathLensTurn {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 760px) {
+  .path-glyph-inscription {
+    transform: translateZ(0) scale(0.82);
+  }
+  .path-glyph-inscription.is-selected {
+    transform: translateZ(0) scale(1.02);
+  }
+  .path-documentary-sigil {
+    width: 68px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path-documentary-sigil::before,
+  .path-documentary-sigil::after,
+  .path-lens-seal > span {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   M4.13 — DETERMINISTIC FIRST LIGHT
+   Slow mobile first paint is non-destructive: the canonical Tree renders at
+   DPR 1 with ornaments deferred, while the SVG continuity layer remains until
+   actual WebGL frames are presented. A renderer reseat is deliberate only.
+   ========================================================================== */
+
+.tree-awakening.is-stalled {
+  pointer-events: auto;
+}
+
+.tree-awakening-retry {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: min(88vw, 520px);
+  height: min(72vh, 560px);
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+}
+
+.tree-awakening-retry .tree-awakening-seal {
+  display: block;
+  width: min(42vh, 66vw, 340px);
+  filter:
+    drop-shadow(0 0 20px rgba(var(--temple-accent-rgb), 0.16))
+    drop-shadow(0 0 44px rgba(var(--temple-accent-rgb), 0.06));
+}
+
+.tree-awakening.is-stalled .tree-awakening-copy span {
+  color: rgba(var(--temple-accent-rgb), 0.78);
+}
+
+.tree-awakening.is-stalled .tree-awakening-copy strong {
+  color: rgba(244, 233, 208, 0.82);
+}
+
+.tree-awakening.is-stalled .tree-awakening-copy i {
+  color: rgba(222, 209, 186, 0.60);
+}
+
+.tree-awakening.is-stalled .tree-awakening-seal {
+  animation-duration: 1.35s;
+}
+
+/* ========================================================================== 
+   M4.14 — SOLAR FAST-PATH / BROWSER COMPATIBILITY
+   Rendering changes are capability-driven in JS; the accepted UI remains
+   visually intact. Privacy WebViews receive quieter GPU startup without
+   removing any Tree or realm ornament from capable browsers.
+   ========================================================================== */
+
+/* ========================================================================== 
+   M4.15 — RENDERER OWNERSHIP / REALM ISOLATION
+   REALM and PATH retain the atmosphere as a static plate: no viewport-sized
+   animation or blend recomposition competes with the raymarcher.
+   ========================================================================== */
+
+.atmosphere-isolated .temple-aurora,
+.atmosphere-isolated .temple-shimmer,
+.atmosphere-isolated .temple-engraving,
+.atmosphere-isolated .marginal-glyph {
+  animation: none !important;
+}
+
+.atmosphere-isolated .temple-aurora { transform: translate3d(0, 0, 0) scale(1.01); }
+.atmosphere-isolated .temple-shimmer {
+  background-position: 50% 0;
+  mix-blend-mode: normal;
+  opacity: 0.045;
+}
+.atmosphere-isolated .temple-noise { mix-blend-mode: normal; opacity: 0.034; }
+.atmosphere-isolated .marginal-glyph { opacity: 0.11; transform: translate3d(0, 0, 0); }
+
+.qa-telemetry {
+  position: fixed;
+  z-index: 40;
+  left: max(8px, env(safe-area-inset-left));
+  bottom: max(8px, env(safe-area-inset-bottom));
+  width: min(330px, calc(100vw - 16px));
+  max-height: min(66vh, 620px);
+  overflow: auto;
+  padding: 10px 11px;
+  border: 1px solid rgba(217, 184, 109, 0.24);
+  background: rgba(3, 2, 9, 0.88);
+  color: rgba(236, 226, 205, 0.78);
+  font: 0.58rem/1.35 'JetBrains Mono', monospace;
+  letter-spacing: 0.025em;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.52);
+  backdrop-filter: none;
+}
+
+.qa-telemetry header,
+.qa-telemetry dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.qa-telemetry header {
+  padding-bottom: 7px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(217, 184, 109, 0.14);
+  color: rgba(245, 231, 199, 0.9);
+}
+.qa-telemetry dl { margin: 0; }
+.qa-telemetry dl > div { padding: 1px 0; }
+.qa-telemetry dt { color: rgba(217, 184, 109, 0.58); }
+.qa-telemetry dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+
+.qa-telemetry button,
+.renderer-reseat-control {
+  appearance: none;
+  border: 1px solid rgba(217, 184, 109, 0.34);
+  background: rgba(121, 22, 45, 0.14);
+  color: rgba(245, 231, 199, 0.9);
+  font: 0.56rem/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.qa-telemetry button { width: 100%; margin-top: 8px; }
+.renderer-reseat-control {
+  position: fixed;
+  z-index: 39;
+  left: 50%;
+  bottom: max(70px, calc(env(safe-area-inset-bottom) + 70px));
+  transform: translateX(-50%);
+}
+
+@media (max-width: 760px) {
+  .qa-telemetry {
+    width: min(290px, calc(100vw - 16px));
+    max-height: 54vh;
+    font-size: 0.51rem;
+  }
+}

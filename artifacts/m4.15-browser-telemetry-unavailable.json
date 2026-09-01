@@ -1,0 +1,14 @@
+{
+  "runtime": "m4.15.0",
+  "status": "BLOCKED_BEFORE_BROWSER_LAUNCH",
+  "serverAttempt1": "Vite preview could not enumerate interfaces while bound to 0.0.0.0; harness was corrected to bind 127.0.0.1.",
+  "serverAttempt2": "PASS: production preview served at http://127.0.0.1:4173.",
+  "browserExecutable": "ABSENT",
+  "playwrightPackage": "PRESENT",
+  "browserInstallAttempt": "BLOCKED: cdn.playwright.dev download timed out repeatedly after 30000 ms.",
+  "journeysExecuted": 0,
+  "gpuClaims": "NONE",
+  "physicalSamsungFoldClaims": "NONE",
+  "physicalQuestClaims": "NONE",
+  "nextAction": "Run npm run build && npm run test:browser on a machine with Playwright Chromium installed, then use ?qa=1 and COPY QA REPORT on the physical Fold."
+}

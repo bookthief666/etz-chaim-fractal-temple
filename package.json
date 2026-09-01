@@ -1,0 +1,27 @@
+{
+  "name": "tree-of-life-fractal",
+  "private": true,
+  "version": "0.8.9",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node scripts/verify-tree.mjs && node scripts/verify-runtime-ownership.mjs",
+    "test:browser": "node scripts/stability-harness.mjs",
+    "check": "npm run test && npm run build",
+    "dev:fresh": "vite --host 0.0.0.0 --port 5173 --strictPort"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@react-three/xr": "^6.6.30",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "vite": "^8.1.0"
+  }
+}
