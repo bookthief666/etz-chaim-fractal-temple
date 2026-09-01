@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { XR } from '@react-three/xr'
@@ -47,6 +48,21 @@ export default function Experience({
   onTreeReady,
 }) {
   const showTree = ownsPhase('canonicalTree', phase)
+  const [programFailure, setProgramFailure] = useState(null)
+
+  useEffect(() => {
+    // A compiler failure belongs to one exact journey/program attempt. Never
+    // poison a later realm simply because the previous requested shader failed.
+    setProgramFailure(null)
+  }, [journeyNonce, selected?.id, pathJourney?.id])
+
+  const reportProgramError = useCallback((error) => {
+    const normalized = error instanceof Error
+      ? error
+      : new Error(String(error?.message ?? error ?? 'GPU shader program failed.'))
+    setProgramFailure(normalized)
+    onProgramError?.(normalized)
+  }, [onProgramError])
 
   return (
     <Canvas
@@ -67,6 +83,7 @@ export default function Experience({
           onContextLost={onGraphicsFault}
           onRestoreStarted={onGraphicsRestoreStarted}
           onContextRestored={onGraphicsRestored}
+          onShaderError={reportProgramError}
         />
         {qaEnabled ? <CanvasTelemetry enabled onSample={onTelemetry} /> : null}
 
@@ -118,7 +135,8 @@ export default function Experience({
             returnEnabled={returnEnabled}
             onDepthStage={onDepthStage}
             onRuntimeTelemetry={qaEnabled ? onTelemetry : undefined}
-            onProgramError={onProgramError}
+            onProgramError={reportProgramError}
+            programFailure={programFailure}
           />
         ) : ownsPhase('pathRenderer', phase) && pathJourney ? (
           <PathMetamorphosis
