@@ -90,9 +90,18 @@ export default function App() {
     webglRenderer: 'pending',
     dpr: 1,
     qualityScale: 1,
+    currentFrameMs: 0,
     rollingFrameMs: 0,
+    frameP50Ms: 0,
+    frameP95Ms: 0,
     rollingFps: 0,
+    hitchCount: 0,
+    hitchThresholdMs: 50,
+    frameSampleCount: 0,
+    frameScope: RUNTIME_PHASE.THRESHOLD,
     shaderProgram: 'tree-instrument',
+    realmProgramState: 'tree-active',
+    realmId: null,
     depthStage: 0,
   })
   const qaEnabled = useMemo(() => {
@@ -563,15 +572,31 @@ export default function App() {
     phase,
     currentTarget,
     shaderProgram: phase === RUNTIME_PHASE.REALM
-      ? qaTelemetry.shaderProgram?.startsWith('dedicated-') ? qaTelemetry.shaderProgram : defaultShaderProgram
+      ? qaTelemetry.realmId === selectedId && /^(dedicated-|compatibility-)/.test(qaTelemetry.shaderProgram ?? '')
+        ? qaTelemetry.shaderProgram
+        : defaultShaderProgram
       : phase === RUNTIME_PHASE.PATH
         ? qaTelemetry.shaderProgram?.startsWith('path-') ? qaTelemetry.shaderProgram : defaultShaderProgram
         : defaultShaderProgram,
     depthStage: qaTelemetry.depthStage ?? (phase === RUNTIME_PHASE.PATH ? pathStage : realmDepthStage),
     dpr: qaTelemetry.dpr,
     qualityScale: qaTelemetry.qualityScale,
+    currentFrameMs: qaTelemetry.currentFrameMs,
     rollingFrameMs: qaTelemetry.rollingFrameMs,
+    frameP50Ms: qaTelemetry.frameP50Ms,
+    frameP95Ms: qaTelemetry.frameP95Ms,
     rollingFps: qaTelemetry.rollingFps,
+    hitchCount: qaTelemetry.hitchCount,
+    hitchThresholdMs: qaTelemetry.hitchThresholdMs,
+    frameSampleCount: qaTelemetry.frameSampleCount,
+    frameScope: qaTelemetry.frameScope,
+    realmProgramState: phase === RUNTIME_PHASE.REALM
+      ? qaTelemetry.realmId === selectedId
+        ? qaTelemetry.realmProgramState
+        : 'canonical-loading'
+      : phase === RUNTIME_PHASE.PATH
+        ? 'operative-path-active'
+        : 'tree-active',
     webglVendor: qaTelemetry.webglVendor,
     webglRenderer: qaTelemetry.webglRenderer,
     contextLossCount: rendererLifecycle.contextLossCount,
@@ -587,6 +612,34 @@ export default function App() {
     window.__ETZ_QA__ = {
       snapshot: () => qaReport,
       enterTemple,
+      setStudyMode: () => {
+        if (phase !== RUNTIME_PHASE.TREE) return false
+        changeExperienceMode('study')
+        return true
+      },
+      setDocumentaryMode: (mode) => {
+        if (phase !== RUNTIME_PHASE.TREE || !['essential', 'hermetic777'].includes(mode)) return false
+        setAttributionMode(mode)
+        return true
+      },
+      focusSephirah: (id) => {
+        if (phase !== RUNTIME_PHASE.TREE || !SEPHIRAH_BY_ID[id]) return false
+        setFocusedId(id)
+        setFocusedPathId(null)
+        return true
+      },
+      focusPath: (pathId) => {
+        const path = PATH_BY_ID[pathId]
+        if (
+          phase !== RUNTIME_PHASE.TREE ||
+          experienceMode !== 'study' ||
+          !path ||
+          !focusedId ||
+          (path.a !== focusedId && path.b !== focusedId)
+        ) return false
+        setFocusedPathId(pathId)
+        return true
+      },
       beginRealm: (id) => {
         if (phase !== RUNTIME_PHASE.TREE || !SEPHIRAH_BY_ID[id]) return false
         beginJourney(id)

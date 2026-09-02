@@ -1,6 +1,16 @@
-# Etz Chaim · The Fractal Temple — M4.15 Renderer Ownership / Realm Isolation
+# Etz Chaim · The Fractal Temple — M4.16 Living Path Instrument
 
-M4.15 is implemented from the exact M4.14 source archive while treating M4.10 as the last physically accepted Fold baseline. It preserves the complete visual, mathematical, ritual, documentary, recursive, path, and Monas-family interaction system while making renderer phase ownership explicit.
+M4.16 preserves the accepted M4.15 renderer-ownership architecture and M4.15.1 realm-ignition guard while reducing generated-realm GPU/compiler work and evolving the canonical 22 paths into one deterministic shared living instrument. It does not add sonification or promote the remaining twenty documentary paths into false metamorphoses.
+
+## M4.16 — Generated Realm Efficiency / Living Path Instrument
+
+- Generated realm normals now evaluate physical geometry only. Decorative glyph fields are separate, sampled at a compensated alternating cadence, and share one deterministic rebased domain.
+- Generated fragments contain only the kernel/SDF/palette functions required by their dedicated identity; no runtime `uRealmKind` dispatcher or speculative prewarming returns.
+- Kether preserves its crown, primary and nested tesseract frames, luminous source, recursive depth structures, and original quality gates while replacing repeated trigonometric SDF rotations with exact precomposed bases.
+- All 22 Tree paths now animate through two instanced draws and one shared clock. Elemental, planetary, and zodiacal families have distinct deterministic motion laws and path-specific signatures.
+- Topology, documentary attributions, interpretive visual grammar, and operative capability remain separate. Only Geburah ↔ Tiphareth and Yesod ↔ Malkuth are traversable.
+- `?qa=1` adds rolling p50/p95 frame time, rolling FPS, hitch count, sample count, and realm-program state to the live and copied report.
+- See `docs/M4.16-GENERATED-REALM-EFFICIENCY-LIVING-PATH-INSTRUMENT.md` for the source audit, architecture, shader-size evidence, QA scope, and unverified physical target.
 
 ## M4.15 — Renderer Ownership / Realm Isolation
 

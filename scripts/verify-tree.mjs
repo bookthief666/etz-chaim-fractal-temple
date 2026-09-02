@@ -9,6 +9,10 @@ import { HERMETIC_PATHS_777 } from '../src/data/attributions/hermeticPaths777.js
 import { SOURCE_CATALOG } from '../src/data/sources.js'
 import { REALM_RITUALS, PATH_RITUALS } from '../src/data/ritualContent.js'
 import { PATH_OPERATORS, getDirectedPathOperator } from '../src/data/pathOperators.js'
+import {
+  createPathVisualGrammar,
+  PATH_MOTION_FAMILY,
+} from '../src/data/pathVisualGrammar.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -393,7 +397,13 @@ const viteConfigText = await fs.readFile(path.join(root, 'vite.config.js'), 'utf
 const mainText = await fs.readFile(path.join(root, 'src/main.jsx'), 'utf8')
 const malkuthShaderText = await fs.readFile(path.join(root, 'src/shaders/malkuthRealm.js'), 'utf8')
 
-assert(buildInfoText.includes("milestone: 'M4.15'") && buildInfoText.includes("runtime: 'm4.15.0'"), 'Current runtime identity must be M4.15 without weakening the M4.10 runtime lock')
+assert(
+  buildInfoText.includes("milestone: 'M4.15'") &&
+  buildInfoText.includes("runtime: 'm4.15.0'") &&
+  buildInfoText.includes("milestone: 'M4.16'") &&
+  buildInfoText.includes("runtime: 'm4.16.0'"),
+  'Current runtime identity must be M4.16 while preserving the inherited M4.15 runtime lock',
+)
 assert(viteConfigText.includes('strictPort: true') && viteConfigText.includes('port: 5173'), 'M4.10 must not silently start a fresh Vite runtime on a different port')
 assert(viteConfigText.includes("'Cache-Control': 'no-store"), 'M4.10 physical QA server must disable stale browser caching')
 assert(!mainText.includes('import { StrictMode') && !mainText.includes('<StrictMode'), 'M4.10 Fold QA entrypoint must not use React dev StrictMode WebGL remount stress')
@@ -428,6 +438,8 @@ const treeInstrumentText = await fs.readFile(path.join(root, 'src/components/Tre
 const treeOfLifeText = await fs.readFile(path.join(root, 'src/components/TreeOfLife.jsx'), 'utf8')
 const sephirahText = await fs.readFile(path.join(root, 'src/components/Sephirah.jsx'), 'utf8')
 const pathSegmentText = await fs.readFile(path.join(root, 'src/components/PathSegment.jsx'), 'utf8')
+const livingPathFieldText = await fs.readFile(path.join(root, 'src/components/LivingPathField.jsx'), 'utf8')
+const livingPathShaderText = await fs.readFile(path.join(root, 'src/shaders/livingPaths.js'), 'utf8')
 
 assert(treeOfLifeText.includes('<TreeInstrumentField'), 'M4.11 requires the non-topological astrolabe field behind the canonical graph')
 assert(treeOfLifeText.includes('resonantIds') && treeOfLifeText.includes('resonant={resonantIds.has(node.id)}'), 'M4.11 requires graph-aware neighbor resonance rather than blanket dimming')
@@ -435,7 +447,8 @@ assert(treeInstrumentText.includes('does not add') && treeInstrumentText.include
 assert(treeInstrumentText.includes("[-2.15, 0, 2.15]") && treeInstrumentText.includes('pulseA'), 'M4.11 requires subtle pillar guides plus a breathing astrolabe field')
 assert(sephirahText.includes('numberCrown') && sephirahText.includes('Array.from({ length: node.number }'), 'M4.11 focused Sephirah must carry its topology-derived numerical bead crown')
 assert(sephirahText.includes('resonant = false') && sephirahText.includes('resonant ? 0.82'), 'M4.11 directly connected Sephiroth must remain visibly resonant')
-assert(pathSegmentText.includes('moteB') && pathSegmentText.includes('moteC'), 'M4.11 focused/operative paths require multi-current light flow')
+assert(treeOfLifeText.includes('<LivingPathField'), 'M4.16 must preserve M4.11 path currents through the shared living field')
+assert(livingPathShaderText.includes('currentHead') && livingPathShaderText.includes('direction'), 'M4.16 focused/operative paths require directional multi-current light flow')
 assert(appText.includes('tree-focus-active') && appText.includes('paths resonate'), 'M4.11 DOM manuscript layer must react to graph invocation state')
 assert(stylesText.includes('M4.11 — LIVING TREE INSTRUMENT'), 'M4.11 family UI refinement marker missing')
 assert(!treeInstrumentText.includes('Math.random('), 'M4.11 Tree instrument field must remain deterministic')
@@ -467,6 +480,66 @@ assert(experienceM412Text.includes('documentaryPathLens'), 'M4.12 documentary le
 assert(stylesText.includes('M4.12 — MOTION-SAFE DESCENT + PATH LENS'), 'M4.12 visual path-lens marker missing')
 console.log('M4.12 motion-safe descent: queued input + bounded recursive transitions + interaction headroom PASS')
 console.log('M4.12 complete 22-path Study lens: Hebrew letters + cosmic attributions + inspectable/traversable separation PASS')
+
+// M4.16 — generated-realm efficiency + living 22-path substrate.
+const createRealmProgramText = await fs.readFile(path.join(root, 'src/shaders/createRealmProgram.js'), 'utf8')
+const canvasTelemetryText = await fs.readFile(path.join(root, 'src/components/CanvasTelemetry.jsx'), 'utf8')
+const qaOverlayText = await fs.readFile(path.join(root, 'src/components/QaTelemetryOverlay.jsx'), 'utf8')
+const stabilityHarnessText = await fs.readFile(path.join(root, 'scripts/stability-harness.mjs'), 'utf8')
+
+for (const symbol of ['createRealmDomain', 'realmDomainRotation', 'mapPhysicalLocal', 'mapGlyphLocal']) {
+  assert(createRealmProgramText.includes(symbol), `M4.16 generated realm optimization is missing ${symbol}`)
+}
+assert(!createRealmProgramText.includes('vec2 mapFields'), 'M4.16 generated normals must not retain the combined physical/glyph dispatcher')
+const normalSource = createRealmProgramText.slice(
+  createRealmProgramText.indexOf('vec3 calcNormal'),
+  createRealmProgramText.indexOf('float raymarch'),
+)
+assert(normalSource.includes('mapPhysical') && !normalSource.includes('mapGlyph'), 'M4.16 normal probes must evaluate physical geometry only')
+assert(createRealmProgramText.includes('mod(float(i), 2.0)') && createRealmProgramText.includes('0.0130, 0.0250'), 'M4.16 generated glyph field must use compensated alternating-step accumulation')
+
+const ketherProgram = (await import('../src/shaders/realms/kether.js')).default
+for (const motif of ['sdTesseractFrameLike', 'crownA', 'crownB', 'crownCell', 'uDepthStage', 'uDepthEpoch']) {
+  assert(ketherProgram.fragment.includes(motif), `M4.16 Kether optimization removed accepted motif ${motif}`)
+}
+assert(ketherProgram.fragment.includes('mix(40.0, 66.0'), 'M4.16 must not hide Kether cost by lowering its accepted quality envelope')
+
+const grammars = PATHS.map((pathRecord) => createPathVisualGrammar(pathRecord, HERMETIC_PATHS_777[pathRecord.id]))
+const familyCounts = Object.fromEntries(Object.values(PATH_MOTION_FAMILY).map((family) => [family, 0]))
+for (const grammar of grammars) familyCounts[grammar.family] += 1
+assert(familyCounts.elemental === 3, `M4.16 requires exactly 3 elemental paths, got ${familyCounts.elemental}`)
+assert(familyCounts.planetary === 7, `M4.16 requires exactly 7 planetary paths, got ${familyCounts.planetary}`)
+assert(familyCounts.zodiacal === 12, `M4.16 requires exactly 12 zodiacal paths, got ${familyCounts.zodiacal}`)
+assert(new Set(grammars.map((grammar) => `${grammar.family}:${grammar.variant}:${grammar.harmonic}:${grammar.rate}:${grammar.phase}`)).size === 22, 'M4.16 every path requires a deterministic signature inside its family law')
+assert(!pathSegmentText.includes('useFrame'), 'M4.16 PathSegment must not restore 22 independent frame callbacks')
+assert((livingPathFieldText.match(/useFrame\(/g) ?? []).length === 1, 'M4.16 living path field requires one shared timing controller')
+assert((livingPathFieldText.match(/<instancedMesh/g) ?? []).length === 2, 'M4.16 path presentation requires the two-draw instanced core/halo field')
+for (const law of ['elementalLaw', 'planetaryLaw', 'zodiacalLaw']) {
+  assert(livingPathShaderText.includes(law), `M4.16 path shader is missing ${law}`)
+}
+assert(pathSegmentText.includes('transform sprite') && pathSegmentText.includes('lang="he"'), 'M4.16 Hebrew signatures must remain correct and spatially anchored')
+assert(Object.keys(PATH_OPERATORS).length === 2, 'M4.16 must not promote the remaining documentary paths into fake operators')
+
+for (const metric of ['currentFrameMs', 'frameP50Ms', 'frameP95Ms', 'hitchCount', 'frameSampleCount', 'frameScope']) {
+  assert(canvasTelemetryText.includes(metric) && qaOverlayText.includes(metric), `M4.16 QA report is missing ${metric}`)
+}
+assert(canvasTelemetryText.includes('frameTimes.current = []') && experienceText.includes('telemetryScope'), 'M4.16 rolling history must reset at renderer-scope boundaries')
+for (const harnessInvariant of [
+  'fold-open-landscape',
+  'fold-cover-portrait',
+  "setDocumentaryMode('hermetic777')",
+  "hebrewIdentity?.text === 'ת'",
+  'for (const sourceId of [operator.from, operator.to])',
+  'REALM_SHADER_FAMILIES[realmId]',
+]) {
+  assert(stabilityHarnessText.includes(harnessInvariant), `M4.16 browser harness is missing ${harnessInvariant}`)
+}
+console.log('M4.16 generated realms: physical/glyph separation + invariant domain hoist PASS')
+console.log('M4.16 Kether: crown/tesseract/depth grammar preserved without quality-threshold reduction PASS')
+console.log('M4.16 living path grammar: elemental 3 / planetary 7 / zodiacal 12 PASS')
+console.log('M4.16 living path renderer: 22 signatures / 2 instanced draws / 1 shared clock PASS')
+console.log('M4.16 operator readiness: topology/documentary/visual/operative separation PASS')
+console.log('M4.16 QA telemetry: current / mean / p50 / p95 / hitches PASS')
 
 
 

@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { PHASE_ONE_VISUALS } from '../data/visualGrammar.js'
 
-export default function Sephirah({ node, focused, selected, resonant = false, dimmed = false, ornamentsEnabled = true, disabled, onFocus }) {
+export default function Sephirah({ node, focused, selected, resonant = false, pathEndpoint = false, dimmed = false, ornamentsEnabled = true, disabled, onFocus }) {
   const group = useRef()
   const halo = useRef()
   const coreMaterial = useRef()
@@ -22,20 +22,20 @@ export default function Sephirah({ node, focused, selected, resonant = false, di
     if (!group.current) return
     const t = clock.elapsedTime
     const pulse = 1 + Math.sin(t * 1.25 + node.number) * 0.018
-    const emphasis = selected ? 1.2 : focused ? 1.16 : hovered ? 1.07 : resonant ? 1.035 : dimmed ? 0.90 : 1
+    const emphasis = selected ? 1.2 : focused ? 1.16 : pathEndpoint ? 1.095 : hovered ? 1.07 : resonant ? 1.035 : dimmed ? 0.90 : 1
     group.current.scale.setScalar(THREE.MathUtils.lerp(group.current.scale.x, pulse * emphasis, Math.min(1, delta * 8)))
     group.current.rotation.z += delta * 0.023 * (node.number % 2 === 0 ? 1 : -1)
 
     if (coreMaterial.current) {
       coreMaterial.current.opacity = THREE.MathUtils.lerp(
         coreMaterial.current.opacity,
-        dimmed ? 0.18 : resonant ? 0.82 : 1,
+        dimmed ? 0.18 : pathEndpoint ? 0.96 : resonant ? 0.82 : 1,
         Math.min(1, delta * 8),
       )
     }
 
     if (halo.current) {
-      const haloPulse = 1 + Math.sin(t * 1.8 + node.number) * (focused ? 0.09 : resonant ? 0.052 : 0.035)
+      const haloPulse = 1 + Math.sin(t * 1.8 + node.number) * (focused ? 0.09 : pathEndpoint ? 0.068 : resonant ? 0.052 : 0.035)
       halo.current.scale.setScalar(haloPulse)
     }
 
@@ -108,7 +108,7 @@ export default function Sephirah({ node, focused, selected, resonant = false, di
         <meshBasicMaterial
           color={visual.aura}
           transparent
-          opacity={dimmed ? 0.018 : selected ? 0.3 : focused ? 0.24 : hovered ? 0.18 : resonant ? 0.135 : 0.105}
+          opacity={dimmed ? 0.018 : selected ? 0.3 : focused ? 0.24 : pathEndpoint ? 0.205 : hovered ? 0.18 : resonant ? 0.135 : 0.105}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
           side={THREE.BackSide}
