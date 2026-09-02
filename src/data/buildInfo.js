@@ -3,7 +3,11 @@ export const BUILD_INFO = Object.freeze({
     milestone: 'M4.15',
     runtime: 'm4.15.0',
   }),
-  milestone: 'M4.15.1',
-  codename: 'Realm Ignition Guard',
-  runtime: 'm4.15.1',
+  inheritedPatch: Object.freeze({
+    milestone: 'M4.15.1',
+    runtime: 'm4.15.1',
+  }),
+  milestone: 'M4.16',
+  codename: 'Generated Realm Efficiency / Living Path Instrument',
+  runtime: 'm4.16.0',
 })

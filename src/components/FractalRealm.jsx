@@ -12,6 +12,21 @@ const DEPTH_RATE = 0.62
 const DEPTH_STAGE_COUNT = 4
 const COMPATIBILITY_HOLD_MS = 2400
 
+function setTesseractBasis(basis0, basis1, phase) {
+  basis0.set(
+    Math.cos(phase),
+    Math.sin(phase),
+    Math.cos(phase * 0.73),
+    Math.sin(phase * 0.73),
+  )
+  basis1.set(
+    Math.cos(phase * -1.17),
+    Math.sin(phase * -1.17),
+    Math.cos(phase * 0.51),
+    Math.sin(phase * 0.51),
+  )
+}
+
 export default function FractalRealm({
   sephirah,
   onReturn,
@@ -39,14 +54,14 @@ export default function FractalRealm({
     const loaded = getLoadedRealmProgram(sephirah.id)
     setShaderProgram(loaded)
     if (loaded) {
-      onRuntimeTelemetry?.({ shaderProgram: loaded.family })
+      onRuntimeTelemetry?.({ realmId: sephirah.id, shaderProgram: loaded.family })
       return () => { active = false }
     }
 
     loadRealmProgram(sephirah.id).then((program) => {
       if (!active) return
       setShaderProgram(program)
-      onRuntimeTelemetry?.({ shaderProgram: program.family })
+      onRuntimeTelemetry?.({ realmId: sephirah.id, shaderProgram: program.family })
     }).catch((error) => {
       if (active) onProgramError?.(error)
     })
@@ -79,8 +94,14 @@ export default function FractalRealm({
       uDepthEpoch: { value: 0 },
       uQuality: { value: Math.min(baseQuality, 0.48) },
       uRealmNumber: { value: sephirah.number },
+      ...(sephirah.id === 'kether' ? {
+        uKetherPhysicalBasis0: { value: new THREE.Vector4(1, 0, 1, 0) },
+        uKetherPhysicalBasis1: { value: new THREE.Vector4(1, 0, 1, 0) },
+        uKetherGlyphBasis0: { value: new THREE.Vector4(1, 0, 1, 0) },
+        uKetherGlyphBasis1: { value: new THREE.Vector4(1, 0, 1, 0) },
+      } : {}),
     }),
-    [visual, realm, baseQuality, sephirah.number],
+    [visual, realm, baseQuality, sephirah.id, sephirah.number],
   )
 
   // The ignition governor must start when the actual raymarch program becomes
@@ -136,6 +157,20 @@ export default function FractalRealm({
     uniforms.uDepthStage.value = depthStage
     uniforms.uDepthPhase.value = depthPhase
     uniforms.uDepthEpoch.value = depthEpoch
+    if (sephirah.id === 'kether') {
+      const physicalPhase = clock.elapsedTime * 0.12 * realm.motionScale
+      const glyphPhase = 0.34 + clock.elapsedTime * realm.motionScale * 0.05
+      setTesseractBasis(
+        uniforms.uKetherPhysicalBasis0.value,
+        uniforms.uKetherPhysicalBasis1.value,
+        physicalPhase,
+      )
+      setTesseractBasis(
+        uniforms.uKetherGlyphBasis0.value,
+        uniforms.uKetherGlyphBasis1.value,
+        glyphPhase,
+      )
+    }
 
     // Motion-safe rendering: while a finger/wheel gesture is actively changing
     // recursive law, temporarily reserve GPU headroom. No motif or stage is
@@ -170,9 +205,15 @@ export default function FractalRealm({
     if (onRuntimeTelemetry && clock.elapsedTime - lastTelemetryAt.current >= 0.25) {
       lastTelemetryAt.current = clock.elapsedTime
       onRuntimeTelemetry({
+        realmId: sephirah.id,
         shaderProgram: programFailure
           ? `compatibility-${sephirah.id}`
           : (shaderProgram?.family ?? `compatibility-loading-${sephirah.id}`),
+        realmProgramState: programFailure
+          ? 'compatibility-failure-continuity'
+          : shaderProgram
+            ? 'canonical-active'
+            : 'compatibility-loading',
         qualityScale: qualityUniform.value,
         depthStage,
       })

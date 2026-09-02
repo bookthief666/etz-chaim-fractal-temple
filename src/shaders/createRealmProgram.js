@@ -134,6 +134,65 @@ function fullFunction(source, token) {
   throw new Error(`Realm shader function is unbalanced: ${token}`)
 }
 
+const SACRED_FUNCTION_ORDER = Object.freeze([
+  'hash11',
+  'rot',
+  'sdSphere',
+  'sdBox',
+  'sdRoundBox',
+  'sdTorus',
+  'sdBoxFrame',
+  'sdOctahedron',
+  'smoothUnion',
+  'smoothSubtraction',
+  'sdSegment2D',
+  'polarPoint',
+  'polarRepeat',
+  'polarRingCell',
+  'sdPentagramPrism',
+  'triangleLines',
+  'sdHexagramPrism',
+  'sdRadialWaveRing',
+  'sdHelixTube',
+  'sdWaveRibbon',
+  'sdTesseractFrameLike',
+  'repeatCell',
+  'neonBands',
+])
+
+const SACRED_FUNCTIONS = Object.fromEntries(
+  SACRED_FUNCTION_ORDER.map((name) => [name, fullFunction(sacredGeometryGLSL, `${name}(`)]),
+)
+
+function selectedSacredGeometrySource(kernelSource) {
+  const required = new Set(['hash11'])
+  let dependencyText = kernelSource
+  let changed = true
+
+  while (changed) {
+    changed = false
+    for (const name of SACRED_FUNCTION_ORDER) {
+      if (required.has(name) || !dependencyText.includes(`${name}(`)) continue
+      required.add(name)
+      dependencyText += `\n${SACRED_FUNCTIONS[name]}`
+      changed = true
+    }
+  }
+
+  return /* glsl */ `
+    const float PI = 3.141592653589793;
+    const float TAU = 6.283185307179586;
+    ${SACRED_FUNCTION_ORDER.filter((name) => required.has(name)).map((name) => SACRED_FUNCTIONS[name]).join('\n')}
+  `
+}
+
+function selectedPaletteSource(shadeSource) {
+  const names = ['spectralMix', 'neonSurface', 'filmicCompress']
+  const required = new Set(['neonSurface', 'filmicCompress'])
+  if (shadeSource.includes('spectralMix(')) required.add('spectralMix')
+  return names.filter((name) => required.has(name)).map((name) => fullFunction(paletteGLSL, `${name}(`)).join('\n')
+}
+
 const SHARED_KERNEL_PREAMBLE = [
   fullFunction(realmKernelsGLSL, 'float crossVoid'),
   fullFunction(realmKernelsGLSL, 'float depthStageOn'),
@@ -151,17 +210,34 @@ function selectedKernelSource(realmId) {
   const lineSection = realmKernelsGLSL.slice(realmKernelsGLSL.indexOf('float realmLinePattern'))
   const branch = `if (uRealmKind < ${realmIndex}.5)`
 
+  const physicalKernel = realmId === 'kether' ? 'ketherGeneratedDE' : `${realmId}DE`
+  const ketherGlyphSource = realmId === 'kether'
+    ? fullFunction(realmKernelsGLSL, 'float ketherGeneratedGlyphDE')
+    : ''
+  const ketherBasisSource = realmId === 'kether'
+    ? [
+        fullFunction(realmKernelsGLSL, 'vec2 combinePhaseBasis'),
+        fullFunction(realmKernelsGLSL, 'vec2 rotateWithBasis'),
+        fullFunction(realmKernelsGLSL, 'float sdTesseractFrameLikeBasis'),
+      ].join('\n')
+    : ''
+  const glyphBody = realmId === 'kether'
+    ? 'return ketherGeneratedGlyphDE(p);'
+    : braceBody(glyphSection, branch)
+
   return /* glsl */ `
     ${SHARED_KERNEL_PREAMBLE}
-    ${fullFunction(realmKernelsGLSL, `float ${realmId}DE`)}
+    ${ketherBasisSource}
+    ${fullFunction(realmKernelsGLSL, `float ${physicalKernel}`)}
+    ${ketherGlyphSource}
 
     float realmDE(vec3 p, float octave) {
-      return ${realmId}DE(p, octave);
+      return ${physicalKernel}(p, octave);
     }
 
     float realmGlyphDE(vec3 p, float octave) {
       float t = uTime * uMotionScale;
-      ${braceBody(glyphSection, branch)}
+      ${glyphBody}
     }
 
     float realmLinePattern(vec3 p) {
@@ -178,6 +254,14 @@ export function createGeneratedRealmProgram(realmId) {
   if (!config) throw new Error(`No generated realm configuration for ${realmId}`)
   const realmKind = REALM_ORDER.indexOf(realmId) + 1
   const kernelSource = selectedKernelSource(realmId)
+  const sacredSource = selectedSacredGeometrySource(kernelSource)
+  const paletteSource = selectedPaletteSource(config.shade)
+  const ketherUniforms = realmId === 'kether' ? /* glsl */ `
+    uniform vec4 uKetherPhysicalBasis0;
+    uniform vec4 uKetherPhysicalBasis1;
+    uniform vec4 uKetherGlyphBasis0;
+    uniform vec4 uKetherGlyphBasis1;
+  ` : ''
 
   const fragment = /* glsl */ `
     precision highp float;
@@ -196,6 +280,7 @@ export function createGeneratedRealmProgram(realmId) {
     uniform vec3 uCoreColor;
     uniform vec3 uAuraColor;
     uniform vec3 uAccentColor;
+    ${ketherUniforms}
 
     varying vec3 vWorldPosition;
 
@@ -203,8 +288,8 @@ export function createGeneratedRealmProgram(realmId) {
     #define MAX_DIST 44.0
     #define SURF_EPS 0.00145
 
-    ${sacredGeometryGLSL}
-    ${paletteGLSL}
+    ${sacredSource}
+    ${paletteSource}
     ${kernelSource}
 
     float safeDistance(float d) {
@@ -212,40 +297,99 @@ export function createGeneratedRealmProgram(realmId) {
       return clamp(d, -16.0, 16.0);
     }
 
-    vec2 mapFields(vec3 p) {
-      float octave = floor(uLogZoom);
+    // The logarithmic rebase law is constant for every probe made by one
+    // fragment. Build its affine transform once in main() rather than repeating
+    // hashes, trigonometry and matrix construction at every march/normal probe.
+    mat3 realmDomainRotation(float xyAngle, float xzAngle) {
+      float cxy = cos(xyAngle);
+      float sxy = sin(xyAngle);
+      float cxz = cos(xzAngle);
+      float sxz = sin(xzAngle);
+      return mat3(
+        cxz * cxy, sxy, sxz * cxy,
+        -cxz * sxy, cxy, -sxz * sxy,
+        -sxz, 0.0, cxz
+      );
+    }
+
+    void createRealmDomain(
+      out mat3 domainRotation,
+      out vec3 domainOffset,
+      out float localScale,
+      out float octave
+    ) {
+      octave = floor(uLogZoom);
       float localPhase = fract(uLogZoom);
-      float localScale = exp2(localPhase * 2.65);
-      vec3 q = p * localScale;
+      localScale = exp2(localPhase * 2.65);
       vec3 domainShift = vec3(
         hash11(octave + uSeed * 3.1) - 0.5,
         hash11(octave + uSeed * 5.7) - 0.5,
         hash11(octave + uSeed * 9.2) - 0.5
       );
-      q += domainShift * ${config.drift};
       float excite = uInteraction * (0.055 + 0.02 * sin(uTime * 4.2 + octave));
       float riteTwist = (uDepthStage - 1.5) * 0.012 + uDepthEpoch * 0.008;
-      q.xy *= rot(excite + riteTwist);
-      q.xz *= rot(-excite * 0.68 - riteTwist * 0.47);
-      return vec2(safeDistance(realmDE(q, octave)), safeDistance(realmGlyphDE(q, octave))) / localScale;
+      domainRotation = realmDomainRotation(
+        excite + riteTwist,
+        -excite * 0.68 - riteTwist * 0.47
+      );
+      domainOffset = domainRotation * (domainShift * ${config.drift});
     }
 
-    float mapScene(vec3 p) { return mapFields(p).x; }
+    vec4 rebasedPoint(vec3 p, mat3 domainRotation, vec3 domainOffset, float localScale) {
+      return vec4(domainRotation * (p * localScale) + domainOffset, localScale);
+    }
 
-    vec3 calcNormal(vec3 p) {
+    float mapPhysicalLocal(vec4 local, float octave) {
+      return safeDistance(realmDE(local.xyz, octave)) / local.w;
+    }
+
+    float mapGlyphLocal(vec4 local, float octave) {
+      return safeDistance(realmGlyphDE(local.xyz, octave)) / local.w;
+    }
+
+    float mapPhysical(
+      vec3 p,
+      mat3 domainRotation,
+      vec3 domainOffset,
+      float localScale,
+      float octave
+    ) {
+      return mapPhysicalLocal(
+        rebasedPoint(p, domainRotation, domainOffset, localScale),
+        octave
+      );
+    }
+
+    vec3 calcNormal(
+      vec3 p,
+      mat3 domainRotation,
+      vec3 domainOffset,
+      float localScale,
+      float octave
+    ) {
       vec2 e = vec2(SURF_EPS, 0.0);
-      float d = mapScene(p);
+      float d = mapPhysical(p, domainRotation, domainOffset, localScale, octave);
       vec3 g = vec3(
-        mapScene(p + e.xyy) - d,
-        mapScene(p + e.yxy) - d,
-        mapScene(p + e.yyx) - d
+        mapPhysical(p + e.xyy, domainRotation, domainOffset, localScale, octave) - d,
+        mapPhysical(p + e.yxy, domainRotation, domainOffset, localScale, octave) - d,
+        mapPhysical(p + e.yyx, domainRotation, domainOffset, localScale, octave) - d
       );
       float l = length(g);
       if (!(l > 0.00001 && l < 1000.0)) return vec3(0.0, 0.0, 1.0);
       return g / l;
     }
 
-    float raymarch(vec3 ro, vec3 rd, out vec3 hitPoint, out float glowAccum, out float glyphAccum) {
+    float raymarch(
+      vec3 ro,
+      vec3 rd,
+      mat3 domainRotation,
+      vec3 domainOffset,
+      float localScale,
+      float octave,
+      out vec3 hitPoint,
+      out float glowAccum,
+      out float glyphAccum
+    ) {
       float travel = 0.0;
       glowAccum = 0.0;
       glyphAccum = 0.0;
@@ -254,14 +398,21 @@ export function createGeneratedRealmProgram(realmId) {
       for (int i = 0; i < MAX_STEPS; i++) {
         if (float(i) > stepBudget) break;
         vec3 p = ro + rd * travel;
-        vec2 fields = mapFields(p);
-        float d = fields.x;
-        float glyphD = fields.y;
+        vec4 local = rebasedPoint(p, domainRotation, domainOffset, localScale);
+        float d = mapPhysicalLocal(local, octave);
         hitPoint = p;
         float nearField = exp(-abs(d) * mix(12.0, 19.0, uSymbolDensity));
         glowAccum += nearField * mix(0.0055, 0.0105, uQuality);
-        float glyphNear = exp(-abs(glyphD) * mix(20.0, 34.0, uSymbolDensity));
-        glyphAccum += glyphNear * mix(0.0065, 0.0125, uQuality) * (0.85 + 0.55 * uInteraction);
+
+        // Decorative/emissive distance is not physical geometry. Sample it on
+        // alternating steps and compensate its integral, matching the accepted
+        // Malkuth/Tiphareth fast path without reducing the glyph's brightness or
+        // allowing normal probes to evaluate it at all.
+        if (mod(float(i), 2.0) < 0.5) {
+          float glyphD = mapGlyphLocal(local, octave);
+          float glyphNear = exp(-abs(glyphD) * mix(20.0, 34.0, uSymbolDensity));
+          glyphAccum += glyphNear * mix(0.0130, 0.0250, uQuality) * (0.85 + 0.55 * uInteraction);
+        }
         if (abs(d) < SURF_EPS || travel > MAX_DIST) break;
         travel += max(abs(d) * 0.70, 0.0030);
         if (!(travel >= 0.0 && travel < MAX_DIST + 8.0)) {
@@ -310,7 +461,22 @@ export function createGeneratedRealmProgram(realmId) {
       vec3 hitPoint = vec3(0.0);
       float glowAccum = 0.0;
       float glyphAccum = 0.0;
-      float travel = raymarch(ro, rd, hitPoint, glowAccum, glyphAccum);
+      mat3 domainRotation;
+      vec3 domainOffset;
+      float localScale;
+      float octave;
+      createRealmDomain(domainRotation, domainOffset, localScale, octave);
+      float travel = raymarch(
+        ro,
+        rd,
+        domainRotation,
+        domainOffset,
+        localScale,
+        octave,
+        hitPoint,
+        glowAccum,
+        glyphAccum
+      );
       float starHash = hash11(dot(floor(rd * 720.0), vec3(17.0, 31.0, 47.0)) + uSeed);
       float star = pow(max(0.0, starHash - 0.992), 4.0) * 5.0;
       vec3 background = realmBackground(rd);
@@ -320,7 +486,7 @@ export function createGeneratedRealmProgram(realmId) {
         gl_FragColor = vec4(filmicCompress(background + atmosphericGlow + star, ${config.missExposure}), 1.0);
         return;
       }
-      vec3 n = calcNormal(hitPoint);
+      vec3 n = calcNormal(hitPoint, domainRotation, domainOffset, localScale, octave);
       vec3 color = shadeRealm(hitPoint, n, rd, travel, glowAccum, glyphAccum);
       gl_FragColor = vec4(filmicCompress(color + star, ${config.hitExposure}), 1.0);
     }

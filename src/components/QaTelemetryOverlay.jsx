@@ -18,8 +18,14 @@ export default function QaTelemetryOverlay({ report }) {
     ['Depth stage', report.depthStage],
     ['DPR', number(report.dpr, 2)],
     ['Quality', number(report.qualityScale, 2)],
-    ['Frame', `${number(report.rollingFrameMs)} ms`],
-    ['FPS', number(report.rollingFps)],
+    ['Frame now', `${number(report.currentFrameMs)} ms`],
+    ['Frame mean', `${number(report.rollingFrameMs)} ms`],
+    ['Frame p50', `${number(report.frameP50Ms)} ms`],
+    ['Frame p95', `${number(report.frameP95Ms)} ms`],
+    ['Rolling FPS', number(report.rollingFps)],
+    [`Hitches >${number(report.hitchThresholdMs, 0)} ms`, `${report.hitchCount} / ${report.frameSampleCount}`],
+    ['Frame scope', report.frameScope],
+    ['Program state', report.realmProgramState],
     ['Context loss', report.contextLossCount],
     ['Restorations', report.contextRestorationCount],
     ['Renderer remounts', report.rendererRemountCount],
@@ -30,7 +36,7 @@ export default function QaTelemetryOverlay({ report }) {
 
   const copyReport = async () => {
     const text = [
-      'ETZ CHAIM · M4.15 QA REPORT',
+      `ETZ CHAIM · ${report.runtime.toUpperCase()} QA REPORT`,
       ...rows.map(([label, value]) => `${label}: ${value}`),
       `User agent: ${report.userAgent}`,
       `Captured: ${new Date().toISOString()}`,

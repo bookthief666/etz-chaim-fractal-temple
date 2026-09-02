@@ -49,6 +49,11 @@ export default function Experience({
 }) {
   const showTree = ownsPhase('canonicalTree', phase)
   const [programFailure, setProgramFailure] = useState(null)
+  const telemetryScope = phase === RUNTIME_PHASE.REALM
+    ? `REALM:${selected?.id ?? 'loading'}`
+    : phase === RUNTIME_PHASE.PATH
+      ? `PATH:${pathJourney?.id ?? 'loading'}:${pathJourney?.sourceId ?? 'unknown'}`
+      : phase
 
   useEffect(() => {
     // A compiler failure belongs to one exact journey/program attempt. Never
@@ -85,7 +90,7 @@ export default function Experience({
           onContextRestored={onGraphicsRestored}
           onShaderError={reportProgramError}
         />
-        {qaEnabled ? <CanvasTelemetry enabled onSample={onTelemetry} /> : null}
+        {qaEnabled ? <CanvasTelemetry enabled scopeKey={telemetryScope} onSample={onTelemetry} /> : null}
 
         {ownsPhase('treeFirstLightProbe', phase) ? <TreeFrameProbe
           active={treeFrameProbeActive}

@@ -65,6 +65,145 @@ export const realmKernelsGLSL = /* glsl */ `
     return d;
   }
 
+  vec2 combinePhaseBasis(vec2 basis, vec2 offsetBasis) {
+    return vec2(
+      basis.x * offsetBasis.x - basis.y * offsetBasis.y,
+      basis.y * offsetBasis.x + basis.x * offsetBasis.y
+    );
+  }
+
+  vec2 rotateWithBasis(vec2 p, vec2 basis) {
+    return vec2(p.x * basis.x - p.y * basis.y, p.x * basis.y + p.y * basis.x);
+  }
+
+  // Exact sdTesseractFrameLike geometry with its uniform-only phase
+  // trigonometry supplied as a precomputed basis. Kether calls the same frame
+  // at every march/normal probe, so this preserves the SDF while avoiding
+  // thousands of repeated sin/cos evaluations per fragment.
+  float sdTesseractFrameLikeBasis(
+    vec3 p,
+    float size,
+    float thickness,
+    vec4 basis0,
+    vec4 basis1,
+    vec4 offsetBasis0,
+    vec4 offsetBasis1
+  ) {
+    vec3 q = p;
+    q.xy = rotateWithBasis(q.xy, combinePhaseBasis(basis0.xy, offsetBasis0.xy));
+    q.yz = rotateWithBasis(q.yz, combinePhaseBasis(basis0.zw, offsetBasis0.zw));
+    float outer = sdBoxFrame(q, vec3(size), thickness);
+
+    vec3 innerP = p;
+    innerP.xz = rotateWithBasis(
+      innerP.xz,
+      combinePhaseBasis(basis1.xy, offsetBasis1.xy)
+    );
+    innerP.yz = rotateWithBasis(
+      innerP.yz,
+      combinePhaseBasis(basis1.zw, offsetBasis1.zw)
+    );
+    float inner = sdBoxFrame(innerP, vec3(size * 0.58), thickness * 0.78);
+    return min(outer, inner);
+  }
+
+  // M4.16 generated Kether fast path. Geometry and quality/depth thresholds
+  // are identical to ketherDE; only uniform phase trigonometry is hoisted out
+  // of the fragment's ray/normal loops through four precomputed vec4 uniforms.
+  float ketherGeneratedDE(vec3 p, float octave) {
+    float t = uTime * 0.12 * uMotionScale;
+    vec3 q = p;
+    q.xy *= rot(t * 0.37 + 0.08 * sin(octave) + uDepthEpoch * 0.03);
+    q.yz *= rot(-t * 0.29);
+
+    float d = sdTesseractFrameLikeBasis(
+      q,
+      0.78,
+      0.028,
+      uKetherPhysicalBasis0,
+      uKetherPhysicalBasis1,
+      vec4(0.913088940, 0.407760453, 0.953365263, 0.301818945),
+      vec4(0.997452103, -0.071339350, 0.995414688, -0.095653531)
+    );
+
+    vec3 ringA = p;
+    ringA.xy *= rot(t * 0.21);
+    float crownA = sdTorus(ringA, vec2(0.78, 0.022));
+
+    vec3 ringB = p;
+    ringB.yz *= rot(PI * 0.5 + t * 0.17);
+    float crownB = sdTorus(ringB, vec2(0.54, 0.014));
+    d = min(d, min(crownA, crownB));
+
+    float scale = 1.82;
+    vec3 r = p;
+    r = abs(r) * 1.82 - vec3(0.67, 0.64, 0.66);
+    float nestedA = sdTesseractFrameLikeBasis(
+      r,
+      0.31,
+      0.016,
+      uKetherPhysicalBasis0,
+      uKetherPhysicalBasis1,
+      vec4(1.0, 0.0, 1.0, 0.0),
+      vec4(0.913088940, 0.407760453, 0.952333570, -0.305058636)
+    ) / scale;
+    d = min(d, nestedA);
+
+    r = abs(r) * 1.82 - vec3(0.67, 0.64, 0.66);
+    scale *= 1.82;
+    float nestedB = sdTesseractFrameLikeBasis(
+      r,
+      0.31,
+      0.016,
+      uKetherPhysicalBasis0,
+      uKetherPhysicalBasis1,
+      vec4(0.819648018, 0.572867460, 0.902481487, 0.430728644),
+      vec4(0.957179296, -0.289495762, 0.999999395, 0.001100000)
+    ) / scale;
+    d = min(d, nestedB);
+
+    if (uQuality >= 0.68) {
+      r = abs(r) * 1.82 - vec3(0.67, 0.64, 0.66);
+      scale *= 1.82;
+      float frame = sdTesseractFrameLikeBasis(
+        r,
+        0.31,
+        0.016,
+        uKetherPhysicalBasis0,
+        uKetherPhysicalBasis1,
+        vec4(0.343645746, 0.939099356, 0.628945670, 0.777449255),
+        vec4(0.534060684, -0.845446146, 0.951660137, 0.307153030)
+      ) / scale;
+      d = min(d, frame);
+    }
+
+    if (uDepthStage > 1.5 && uQuality > 0.52) {
+      vec3 crownCell = polarRingCell(q, 8.0, 0.93);
+      d = min(d, sdTesseractFrameLike(crownCell, 0.16, 0.009, t * 0.6));
+    }
+
+    d = min(d, sdSphere(p, 0.045));
+    return d;
+  }
+
+  float ketherGeneratedGlyphDE(vec3 p) {
+    vec3 g = p;
+    float t = uTime * uMotionScale;
+    g.xy *= rot(0.11 * t + uDepthEpoch * 0.03);
+    float frame = sdTesseractFrameLikeBasis(
+      g,
+      0.62,
+      0.010,
+      uKetherGlyphBasis0,
+      uKetherGlyphBasis1,
+      vec4(1.0, 0.0, 1.0, 0.0),
+      vec4(0.913088940, 0.407760453, 0.952333570, -0.305058636)
+    );
+    vec3 ring = p;
+    ring.yz *= rot(PI * 0.5);
+    return min(frame, sdTorus(ring, vec2(0.72, 0.011)));
+  }
+
   // 2 · CHOKMAH ----------------------------------------------------------
   float chokmahDE(vec3 p, float octave) {
     float t = uTime * 0.58 * uMotionScale;

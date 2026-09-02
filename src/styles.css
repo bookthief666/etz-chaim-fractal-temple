@@ -3560,7 +3560,7 @@ select {
   animation-duration: 1.35s;
 }
 
-/* ========================================================================== 
+/* ==========================================================================
    M4.14 — SOLAR FAST-PATH / BROWSER COMPATIBILITY
    Rendering changes are capability-driven in JS; the accepted UI remains
    visually intact. Privacy WebViews receive quieter GPU startup without
@@ -3585,6 +3585,33 @@ select {
   background-position: 50% 0;
   mix-blend-mode: normal;
   opacity: 0.045;
+}
+
+/* ==========================================================================
+   M4.16 — GENERATED REALM EFFICIENCY / LIVING PATH INSTRUMENT
+   Path family identity is mathematical in WebGL. These manuscript accents
+   support the spatial Hebrew/cosmic signature without becoming a label wall.
+   ========================================================================== */
+
+.path-glyph-inscription.family-elemental .path-glyph-letter {
+  text-shadow: 0 0 10px rgba(196, 222, 218, 0.30);
+}
+
+.path-glyph-inscription.family-planetary .path-glyph-cosmic {
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 11px rgba(218, 184, 109, 0.28);
+}
+
+.path-glyph-inscription.family-zodiacal::before,
+.path-glyph-inscription.family-zodiacal::after {
+  background: linear-gradient(90deg, transparent, rgba(174, 151, 191, 0.34));
+}
+
+.path-glyph-inscription.is-selected .path-glyph-letter {
+  color: #fff3cf;
+  text-shadow:
+    0 0 8px rgba(var(--temple-accent-rgb), 0.34),
+    0 0 20px rgba(var(--temple-accent-rgb), 0.16);
 }
 .atmosphere-isolated .temple-noise { mix-blend-mode: normal; opacity: 0.034; }
 .atmosphere-isolated .marginal-glyph { opacity: 0.11; transform: translate3d(0, 0, 0); }

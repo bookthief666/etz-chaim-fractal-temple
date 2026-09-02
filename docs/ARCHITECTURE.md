@@ -1,19 +1,20 @@
 # Architecture Notes — M4
 
-## 1. The project has three epistemic layers
+## 1. The project has four independent path authorities
 
 The application must not encode one historical/reception system into the graph itself.
 
 1. **Topology** — the chosen ten-node / twenty-two-edge Hermetic-Kircher-style spatial graph.
 2. **Attribution systems** — documentary claims such as divine names, angelic orders, letters, Tarot or astrology, with provenance.
 3. **Visual / interaction grammar** — our mathematical interpretation: SDFs, tesseract-like frames, pentagrams, hexagrams, path morphs, motion laws and palettes.
+4. **Operative capability** — the deliberately small registry of paths that have implemented reversible metamorphoses.
 
-The M3B path operators live only in layer 3. A working Yesod→Malkuth metamorphosis does not constitute a historical attribution claim about that edge.
+The visual presentation layer and `PATH_OPERATORS` are independent. A working Yesod→Malkuth metamorphosis does not constitute a historical attribution claim about that edge, and a documentary attribution does not imply operative traversal.
 
 
 ## M4 study / ritual layer
 
-M4 introduces a fourth application concern without collapsing it into the other three epistemic layers: **presentation mode**. Presentation mode decides how much of the existing information is surfaced; it does not rewrite topology, documentary claims, or shader law.
+M4 also introduces a separate application concern without collapsing it into the path authorities: **presentation mode**. Presentation mode decides how much of the existing information is surfaced; it does not rewrite topology, documentary claims, visual grammar, or operative capability.
 
 - **Pure Vision** — direct Sephirah entry and minimal interface.
 - **Study** — full folios, Core/777 documentary selector, source ledger, optional active dossier.
@@ -78,9 +79,13 @@ Every realm provides at least two distance fields:
 
 This is why a pentagram, hexagram or lunar ring can remain legible through a deeper architecture rather than needing to be the nearest solid object.
 
-The raymarch loop accumulates both structural aura and glyph aura, then applies realm-specific surface response and filmic compression.
+The generated M4.16 raymarch evaluates structural distance at each active step and samples glyph distance at a compensated alternating cadence. Normal probes call the structural field only. The loop then applies realm-specific surface response and filmic compression.
 
 ## 6. Path field model
+
+The macro Tree's 22 visible paths use one `LivingPathField`: two instanced draws, shared geometry/materials, one frame clock, and deterministic per-edge attributes. `PathSegment` owns only relevant hit targets and spatial documentary inscriptions. `pathVisualGrammar.js` supplies elemental, planetary, and zodiacal presentation laws; those laws are original interpretive mathematics rather than sourced occult doctrine.
+
+The operative path renderer remains distinct:
 
 M3B path shaders are not screenshot crossfades and do not evaluate two full realm shaders simultaneously.
 
@@ -126,7 +131,7 @@ Kether receives an additional conservative mobile budget because its nested fram
 
 ### Context loss
 
-Mobile Chromium may kill or reset a WebGL context after a GPU watchdog event. `RendererGuard` treats this as a recoverable renderer fault, not an unrecoverable app state. App remounts the Canvas and returns safely to the Tree.
+Mobile Chromium may kill or reset a WebGL context after a GPU watchdog event. `RendererGuard` treats the actual `webglcontextlost/restored` events as recovery signals. The unified lifecycle can reseat the Canvas while preserving the active rite; wall-clock first-light or entry timers never have remount authority.
 
 ## 8. XR locomotion invariant
 

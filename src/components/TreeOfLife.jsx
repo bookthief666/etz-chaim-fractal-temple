@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
-import { SEPHIROTH, PATHS, SEPHIRAH_BY_ID } from '../data/treeTopology.js'
+import { SEPHIROTH, PATHS, PATH_BY_ID, SEPHIRAH_BY_ID } from '../data/treeTopology.js'
 import { PATH_OPERATORS } from '../data/pathOperators.js'
 import { HERMETIC_PATHS_777 } from '../data/attributions/hermeticPaths777.js'
 import PathSegment from './PathSegment.jsx'
+import LivingPathField from './LivingPathField.jsx'
 import Sephirah from './Sephirah.jsx'
 import TreeInstrumentField from './TreeInstrumentField.jsx'
 
@@ -27,9 +28,18 @@ export default function TreeOfLife({
     return ids
   }, [focusedId])
 
+  const selectedPath = selectedPathId ? PATH_BY_ID[selectedPathId] : null
+
   return (
     <group>
       {ornamentsEnabled ? <TreeInstrumentField focusedId={focusedId} interactionLocked={interactionLocked} /> : null}
+      <LivingPathField
+        focusedId={focusedId}
+        selectedPathId={selectedPathId}
+        dimmed={interactionLocked}
+        inspectableEnabled={pathInteractionEnabled}
+        ornamentsEnabled={ornamentsEnabled}
+      />
       {PATHS.map((path) => (
         <PathSegment
           key={path.id}
@@ -56,7 +66,13 @@ export default function TreeOfLife({
           selected={selectedId === node.id}
           disabled={interactionLocked}
           resonant={resonantIds.has(node.id)}
-          dimmed={Boolean(focusedId && focusedId !== node.id && !resonantIds.has(node.id))}
+          pathEndpoint={Boolean(selectedPath && (selectedPath.a === node.id || selectedPath.b === node.id))}
+          dimmed={Boolean(
+            focusedId
+            && focusedId !== node.id
+            && !resonantIds.has(node.id)
+            && !(selectedPath && (selectedPath.a === node.id || selectedPath.b === node.id))
+          )}
           ornamentsEnabled={ornamentsEnabled}
           onFocus={onFocus}
         />
